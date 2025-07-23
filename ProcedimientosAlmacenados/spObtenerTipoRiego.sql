@@ -1,0 +1,9 @@
+CREATE OR ALTER PROCEDURE spObtenerTipoRiego
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT TipoID, Nombre
+    FROM TipoRiego
+    ORDER BY TipoID
+END

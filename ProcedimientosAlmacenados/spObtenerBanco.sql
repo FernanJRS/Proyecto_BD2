@@ -1,0 +1,9 @@
+CREATE OR ALTER PROCEDURE spObtenerBanco
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT BancoID, Nombre
+    FROM Banco
+    ORDER BY BancoID
+END

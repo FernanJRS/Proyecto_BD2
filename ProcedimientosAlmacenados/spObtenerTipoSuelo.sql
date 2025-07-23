@@ -1,0 +1,9 @@
+CREATE OR ALTER PROCEDURE spObtenerTipoSuelo
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT TipoID, Nombre
+    FROM TipoSuelo
+    ORDER BY TipoID
+END

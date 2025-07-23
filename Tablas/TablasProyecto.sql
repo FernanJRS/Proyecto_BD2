@@ -261,7 +261,9 @@ CREATE TABLE dbo.Agricultor (
 	CONSTRAINT fkCuentaAgricultor FOREIGN KEY (CuentaID) REFERENCES CuentaBancaria
 )
 ALTER TABLE dbo.Agricultor ADD CONSTRAINT ckCorreoAgricultor CHECK (Correo LIKE '%@%.%')
-ALTER TABLE dbo.Agricultor ADD CONSTRAINT ckIdentidadAgricultor CHECK (LEN(Identidad) = 13)
+ALTER TABLE dbo.Agricultor ADD CONSTRAINT ckIdentidadAgricultor CHECK ((LEN(REPLACE(Identidad, '-', '')) = 13) AND (CAST(LEFT(Identidad, 2) AS INT) BETWEEN 1 AND 18) AND 
+CAST(SUBSTRING(identidad, 6, 4) AS INT) < YEAR(GETDATE()))
+ALTER TABLE dbo.Agricultor ADD CONSTRAINT ckTelefonoAgricultor CHECK ((LEN(REPLACE(Telefono, '-', '')) = 8) AND (CAST(LEFT(Telefono, 1) AS INT) IN (3, 8, 9)))
 GO
 
 --DROP TABLE dbo.Fincas
