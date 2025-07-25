@@ -1,4 +1,5 @@
 USE GrupoNo4
+GO
 
 --DROP TABLE dbo.TipoRiego
 CREATE TABLE dbo.TipoRiego (
@@ -40,7 +41,7 @@ CREATE TABLE dbo.Cliente
 GO
 ALTER TABLE dbo.Cliente ADD CONSTRAINT ukIdentidad UNIQUE (Identidad)
 ALTER TABLE dbo.Cliente ADD CONSTRAINT ukTelefono UNIQUE (Telefono)
-ALTER TABLE dbo.Cliente ADD CONSTRAINT ckIdentidad CHECK ((TipoIdentidad = 'C' AND LEN(Identidad) = 13)
+ALTER TABLE dbo.Cliente ADD CONSTRAINT ckIdentidad CHECK ((TipoIdentidad = 'C' AND LEN(REPLACE(Identidad, '-', '')) = 13)
 OR (TipoIdentidad = 'R' AND LEN(Identidad) = 14))
 GO
 
@@ -95,6 +96,7 @@ CREATE TABLE dbo.ProductosAgricolas (
     UnidadID		INT NOT NULL,
 	CONSTRAINT pkProductoAgrícolaID PRIMARY KEY (ProductoID)
 )
+ALTER TABLE dbo.ProductosAgricolas ADD CONSTRAINT ukNombreProducto UNIQUE (Nombre)
 ALTER TABLE dbo.ProductosAgricolas ADD CONSTRAINT fkUnidadProducto FOREIGN KEY (UnidadID) REFERENCES UnidadMedida
 ALTER TABLE dbo.ProductosAgricolas ADD CONSTRAINT fkTipoProductoAgricola FOREIGN KEY (TipoID) REFERENCES dbo.TipoProducto
 EXEC sp_bindrule 'rCantidadMayor0', 'dbo.ProductosAgricolas.Existencias'
@@ -178,13 +180,19 @@ CREATE TABLE dbo.ProveedorInsumos (
     Nombre				VARCHAR(100) NOT NULL,
     Contacto			VARCHAR(100) NOT NULL,
     Direccion			VARCHAR(200) NOT NULL,
+	RTN					VARCHAR(20) NOT NULL,
     Telefono			VARCHAR(20) NOT NULL,
 	Correo				VARCHAR(50) NOT NULL,
 	CondicionesCredito	VARCHAR(MAX),
 	CONSTRAINT pkProveedorInsumosID PRIMARY KEY (ProveedorID),
 	CONSTRAINT fkCuentaProveedor FOREIGN KEY (CuentaID) REFERENCES CuentaBancaria
 )
+
 ALTER TABLE dbo.ProveedorInsumos ADD CONSTRAINT ckCorreoProveedor CHECK (Correo LIKE '%@%.%')
+ALTER TABLE dbo.ProveedorInsumos ADD CONSTRAINT ckRTNProveedor CHECK (LEN(RTN) = 14)
+ALTER TABLE dbo.ProveedorInsumos ADD CONSTRAINT ckTelefonoProveedor CHECK ((LEN(REPLACE(Telefono, '-', '')) = 8) AND (CAST(LEFT(Telefono, 1) AS INT) IN (3, 8, 9)))
+GO
+
 GO
 
 --DROP TABLE dbo.CompraInsumos
@@ -226,6 +234,7 @@ CREATE TABLE dbo.InsumosAgricolas (
 	CONSTRAINT pkInsumoID PRIMARY KEY (InsumoID),
 	CONSTRAINT fkTipoInsumo FOREIGN KEY (TipoInsumoID) REFERENCES TipoInsumo
 )
+ALTER TABLE dbo.InsumosAgricolas ADD CONSTRAINT ukNombreInsumo UNIQUE (Nombre)
 ALTER TABLE dbo.InsumosAgricolas ADD CONSTRAINT fkUnidadInsumo FOREIGN KEY (UnidadID) REFERENCES UnidadMedida
 EXEC sp_bindrule 'rCantidadMayor0', 'dbo.InsumosAgricolas.Precio'
 EXEC sp_bindrule 'rCantidadMayor0', 'dbo.InsumosAgricolas.Existencias'
