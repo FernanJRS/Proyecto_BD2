@@ -89,15 +89,13 @@ GO
 CREATE TABLE dbo.ProductosAgricolas (
     ProductoID		INT NOT NULL,
     Nombre			VARCHAR(100) NOT NULL,
-	Codigo			VARCHAR(36) NOT NULL, -- AS CONCAT('AGR-', LEFT(CAST(NEWID() AS VARCHAR(36)), 6)),
+	Codigo			VARCHAR(20) NOT NULL, -- AS CONCAT('AGR-', LEFT(CAST(NEWID() AS VARCHAR(36)), 6)),
 	TipoID			INT NOT NULL,
-	Existencias		INT NOT NULL,
+	Existencias		NUMERIC(11,2) NOT NULL,
 	Precio			NUMERIC(11,2) NOT NULL,
-    UnidadID		INT NOT NULL,
 	CONSTRAINT pkProductoAgrícolaID PRIMARY KEY (ProductoID)
 )
 ALTER TABLE dbo.ProductosAgricolas ADD CONSTRAINT ukNombreProducto UNIQUE (Nombre)
-ALTER TABLE dbo.ProductosAgricolas ADD CONSTRAINT fkUnidadProducto FOREIGN KEY (UnidadID) REFERENCES UnidadMedida
 ALTER TABLE dbo.ProductosAgricolas ADD CONSTRAINT fkTipoProductoAgricola FOREIGN KEY (TipoID) REFERENCES dbo.TipoProducto
 EXEC sp_bindrule 'rCantidadMayor0', 'dbo.ProductosAgricolas.Existencias'
 EXEC sp_bindrule 'rCantidadMayor0', 'dbo.ProductosAgricolas.Precio'
@@ -109,6 +107,7 @@ CREATE TABLE dbo.FacturaDetalle
 	FacturaID	INT NOT NULL,
 	ProductoID	INT NOT NULL,
 	Cantidad	INT NOT NULL,
+	Unidad		VARCHAR(20) NOT NULL,
 	Precio		NUMERIC(11,2) NOT NULL,
 	Impuesto	NUMERIC(11,2) NOT NULL,
 	Descuento	NUMERIC(11,2) NOT NULL,
@@ -225,17 +224,16 @@ GO
 CREATE TABLE dbo.InsumosAgricolas (
     InsumoID		INT NOT NULL,
     Nombre			VARCHAR(100) NOT NULL,
+	Codigo			VARCHAR(20) NOT NULL,
     TipoInsumoID	INT NOT NULL,
-	Codigo			VARCHAR(36) NOT NULL, -- AS CONCAT( 'INS-' ,LEFT(CAST(NEWID() AS VARCHAR(36)), 6)),
 	Descripcion		VARCHAR(150) NOT NULL,
 	Precio			NUMERIC(11,2) NOT NULL,
 	Existencias		INT NOT NULL,
-	UnidadID		INT NOT NULL,
+	Unidad			VARCHAR(20) NOT NULL,
 	CONSTRAINT pkInsumoID PRIMARY KEY (InsumoID),
 	CONSTRAINT fkTipoInsumo FOREIGN KEY (TipoInsumoID) REFERENCES TipoInsumo
 )
 ALTER TABLE dbo.InsumosAgricolas ADD CONSTRAINT ukNombreInsumo UNIQUE (Nombre)
-ALTER TABLE dbo.InsumosAgricolas ADD CONSTRAINT fkUnidadInsumo FOREIGN KEY (UnidadID) REFERENCES UnidadMedida
 EXEC sp_bindrule 'rCantidadMayor0', 'dbo.InsumosAgricolas.Precio'
 EXEC sp_bindrule 'rCantidadMayor0', 'dbo.InsumosAgricolas.Existencias'
 GO
@@ -246,6 +244,7 @@ CREATE TABLE dbo.CompraDetalleInsumos
 	CompraInsumoID		INT NOT NULL,
 	InsumoID			INT NOT NULL,
 	Cantidad			INT NOT NULL,
+	Unidad				VARCHAR(20) NOT NULL,
 	Precio				NUMERIC(11,2) NOT NULL,
 	Tasa				NUMERIC(11,2) NOT NULL,
 	Descuento			NUMERIC(11,2) NOT NULL,
@@ -297,8 +296,8 @@ CREATE TABLE dbo.Lotes (
     Extension			FLOAT NOT NULL,
     TipoSueloID			INT NOT NULL,
     TipoRiegoID			INT NOT NULL,
-	CantidadCosechas	INT NOT NULL, 
-    FechaSiembra		DATETIME NOT NULL,
+	CantidadCosechas	INT, 
+    FechaSiembra		DATETIME,
 	CONSTRAINT pkLoteFinca PRIMARY KEY (FincaID, LoteID),
 	CONSTRAINT fkFincaLote FOREIGN KEY (FincaID) REFERENCES Fincas(FincaID),
 	CONSTRAINT fkLoteTipoRiego FOREIGN KEY (TipoRiegoID) REFERENCES TipoRiego,
@@ -313,10 +312,11 @@ CREATE TABLE dbo.Bodega
 (
 	BodegaID	INT NOT NULL,
 	Nombre		VARCHAR(100) NOT NULL,
+	Descripcion VARCHAR(MAX),
 	Espacio		BIGINT NOT NULL, -- En metros cúbicos (m3)
 	CONSTRAINT pkBodegaID PRIMARY KEY (BodegaID)
 )
-INSERT INTO dbo.Bodega VALUES (1, 'Bodega Principal', 5000)
+INSERT INTO dbo.Bodega VALUES (1, 'Bodega 1', 'Aqui se almacenan los cultivos alimenticios', 5000);
 GO
 
 --DROP TABLE dbo.CosechaAgricultor
