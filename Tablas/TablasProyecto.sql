@@ -316,6 +316,7 @@ CREATE TABLE dbo.Bodega
 	Espacio		BIGINT NOT NULL, -- En metros cúbicos (m3)
 	CONSTRAINT pkBodegaID PRIMARY KEY (BodegaID)
 )
+ALTER TABLE dbo.Bodega ADD CONSTRAINT ukNombreBodega UNIQUE (Nombre); 
 INSERT INTO dbo.Bodega VALUES (1, 'Bodega 1', 'Aqui se almacenan los cultivos alimenticios', 5000);
 GO
 
