@@ -29,3 +29,7 @@ AS
 		INSERT INTO Lotes VALUES (NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 		
 GO
+
+SELECT * FROM ProductosAgricolas
+SELECT * FROM TipoRiego
+SELECT * FROM TipoSuelo

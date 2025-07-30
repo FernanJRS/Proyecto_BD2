@@ -15,3 +15,5 @@ AS
 	INSERT INTO ProductosAgricolas (ProductoID, Nombre, Existencias, Precio, Codigo, TipoID )
 	VALUES (@productoID, @nombre, 0, 1.00, @codigo, @tipoProductoID)
 GO
+
+SELECT * FROM TipoProducto

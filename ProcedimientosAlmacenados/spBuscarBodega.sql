@@ -1,0 +1,6 @@
+CREATE OR ALTER PROCEDURE spBuscarBodega
+    @Codigo VARCHAR(50)
+AS
+BEGIN
+    SELECT * FROM Bodega WHERE BodegaID = @Codigo
+END

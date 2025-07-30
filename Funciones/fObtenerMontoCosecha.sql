@@ -6,7 +6,7 @@ AS
 	BEGIN
 		DECLARE @monto NUMERIC(11,2);
 
-		SELECT @monto = SUM(Precio * Cantidad * (1 - ISNULL(Descuento, 0))) FROM @tdetalle
+		SELECT @monto = SUM(Precio * Cantidad) FROM @tdetalle
 
 		RETURN @monto
 	END

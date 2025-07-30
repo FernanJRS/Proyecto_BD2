@@ -56,7 +56,6 @@ CREATE TABLE dbo.Factura
 	Tipo		CHAR(1) NOT NULL,
 	SubTotal	NUMERIC(11,2) NOT NULL,
 	Descuento	NUMERIC(11,2) NOT NULL,
-	Impuesto	NUMERIC(11,2) NOT NULL,
 	CONSTRAINT pkFacturaID PRIMARY KEY (FacturaID),
 	CONSTRAINT fkClienteID FOREIGN KEY (ClienteID) REFERENCES Cliente
 )
@@ -109,7 +108,6 @@ CREATE TABLE dbo.FacturaDetalle
 	Cantidad	INT NOT NULL,
 	Unidad		VARCHAR(20) NOT NULL,
 	Precio		NUMERIC(11,2) NOT NULL,
-	Impuesto	NUMERIC(11,2) NOT NULL,
 	Descuento	NUMERIC(11,2) NOT NULL,
 	CONSTRAINT pkFacturaDetalleID PRIMARY KEY (FacturaID, ProductoID),
 	CONSTRAINT fkFacturaDetalleProducto FOREIGN KEY (ProductoID) REFERENCES ProductosAgricolas,
@@ -117,8 +115,7 @@ CREATE TABLE dbo.FacturaDetalle
 )
 GO
 EXEC sp_bindrule 'rCantidadMayor0', 'dbo.FacturaDetalle.Cantidad'
-EXEC sp_bindrule 'rCantidadMayor0', 'dbo.FacturaDetalle.Precio'
-ALTER TABLE dbo.FacturaDetalle ADD CONSTRAINT ckImpuestoProductoFactura CHECK (Impuesto IN (0.12, 0.15, 0.18))
+EXEC sp_bindrule 'rCantidadMayor0', 'dbo.FacturaDetalle.Precio' 
 ALTER TABLE dbo.FacturaDetalle ADD CONSTRAINT ckDescuentoProductoFactura CHECK (Descuento BETWEEN 0 AND 1)
 GO
 
@@ -161,16 +158,6 @@ ALTER TABLE dbo.CuentaBancaria ADD CONSTRAINT ckTipoUsuarioCuenta CHECK (Tipo IN
 ALTER TABLE dbo.CuentaBancaria ADD CONSTRAINT ckTipoCuentaBancaria CHECK (TipoCuenta IN ('A', 'C'))
 GO
 
---DROP TABLE dbo.TipoProveedorInsumos
-CREATE TABLE dbo.TipoProveedorInsumos
-(
-	TipoID			INT NOT NULL,
-	ProveedorID		INT NOT NULL,
-	CONSTRAINT pkTipoProveedorInsumo PRIMARY KEY (TipoID, ProveedorID),
-	CONSTRAINT fkTiposProveedores FOREIGN KEY (TipoID) REFERENCES TipoProveedor,
-	CONSTRAINT fkProveedoresInsumos FOREIGN KEY (ProveedorID) REFERENCES ProveedorInsumos
-)
-GO
 
 --DROP TABLE dbo.ProveedorInsumos
 CREATE TABLE dbo.ProveedorInsumos (
@@ -178,15 +165,16 @@ CREATE TABLE dbo.ProveedorInsumos (
 	CuentaID			INT NOT NULL,
     Nombre				VARCHAR(100) NOT NULL,
     Contacto			VARCHAR(100) NOT NULL,
+	TipoID				INT NOT NULL,
     Direccion			VARCHAR(200) NOT NULL,
 	RTN					VARCHAR(20) NOT NULL,
     Telefono			VARCHAR(20) NOT NULL,
 	Correo				VARCHAR(50) NOT NULL,
 	CondicionesCredito	VARCHAR(MAX),
 	CONSTRAINT pkProveedorInsumosID PRIMARY KEY (ProveedorID),
-	CONSTRAINT fkCuentaProveedor FOREIGN KEY (CuentaID) REFERENCES CuentaBancaria
+	CONSTRAINT fkCuentaProveedor FOREIGN KEY (CuentaID) REFERENCES CuentaBancaria,
+	CONSTRAINT fkProveedorTipo FOREIGN KEY (TipoID) REFERENCES TipoProveedor
 )
-
 ALTER TABLE dbo.ProveedorInsumos ADD CONSTRAINT ckCorreoProveedor CHECK (Correo LIKE '%@%.%')
 ALTER TABLE dbo.ProveedorInsumos ADD CONSTRAINT ckRTNProveedor CHECK (LEN(RTN) = 14)
 ALTER TABLE dbo.ProveedorInsumos ADD CONSTRAINT ckTelefonoProveedor CHECK ((LEN(REPLACE(Telefono, '-', '')) = 8) AND (CAST(LEFT(Telefono, 1) AS INT) IN (3, 8, 9)))
@@ -201,8 +189,7 @@ CREATE TABLE dbo.CompraInsumos (
     FechaCompra			DATETIME NOT NULL,
 	FechaVencimiento	DATETIME NOT NULL,
 	SubTotal			NUMERIC(11,2) NOT NULL,
-	Impuesto			NUMERIC(11,2) NOT NULL,
-	Descuento			NUMERIC(11,2) NOT NULL
+	Descuento			NUMERIC(11,2) NOT NULL,
 	CONSTRAINT pkCompraInsumoID PRIMARY KEY (CompraInsumosID),
 	CONSTRAINT fkProveedorCompra FOREIGN KEY (ProveedorID) REFERENCES ProveedorInsumos
 )
@@ -246,12 +233,10 @@ CREATE TABLE dbo.CompraDetalleInsumos
 	Cantidad			INT NOT NULL,
 	Unidad				VARCHAR(20) NOT NULL,
 	Precio				NUMERIC(11,2) NOT NULL,
-	Tasa				NUMERIC(11,2) NOT NULL,
 	Descuento			NUMERIC(11,2) NOT NULL,
 	CONSTRAINT pkCompraDetalleID PRIMARY KEY (CompraInsumoID, InsumoID),
 	CONSTRAINT fkCompraDetalleInsumo FOREIGN KEY (InsumoID) REFERENCES InsumosAgricolas
 )
-ALTER TABLE dbo.CompraDetalleInsumos ADD CONSTRAINT ckTasaInsumos CHECK (Tasa IN (0.12, 0.15, 0.18))
 ALTER TABLE dbo.CompraDetalleInsumos ADD CONSTRAINT ckDecuentoInsumos CHECK (Descuento BETWEEN 0 AND 1)
 EXEC sp_bindrule 'rCantidadMayor0', 'dbo.CompraDetalleInsumos.Precio'
 GO
@@ -269,6 +254,7 @@ CREATE TABLE dbo.Agricultor (
 	CONSTRAINT fkCuentaAgricultor FOREIGN KEY (CuentaID) REFERENCES CuentaBancaria
 )
 ALTER TABLE dbo.Agricultor ADD CONSTRAINT ckCorreoAgricultor CHECK (Correo LIKE '%@%.%')
+ALTER TABLE dbo.Agricultor ADD CONSTRAINT ukIdentidadAgricultor UNIQUE (Identidad) 
 ALTER TABLE dbo.Agricultor ADD CONSTRAINT ckIdentidadAgricultor CHECK ((LEN(REPLACE(Identidad, '-', '')) = 13) AND (CAST(LEFT(Identidad, 2) AS INT) BETWEEN 1 AND 18) AND 
 CAST(SUBSTRING(identidad, 6, 4) AS INT) < YEAR(GETDATE()))
 ALTER TABLE dbo.Agricultor ADD CONSTRAINT ckTelefonoAgricultor CHECK ((LEN(REPLACE(Telefono, '-', '')) = 8) AND (CAST(LEFT(Telefono, 1) AS INT) IN (3, 8, 9)))
@@ -280,10 +266,11 @@ CREATE TABLE dbo.Fincas (
     AgricultorID	INT NOT NULL,
     Nombre			VARCHAR(100) NOT NULL,
 	Ubicacion		VARCHAR(50) NOT NULL,
-    Extension		FlOAT NOT NULL,
+    Extension		FlOAT NOT NULL, -- En hectáreas
 	CONSTRAINT pkFincaID PRIMARY KEY (FincaID),
 	CONSTRAINT fkFincaAgricultor FOREIGN KEY (AgricultorID) REFERENCES Agricultor
 )
+ALTER TABLE dbo.Fincas ADD CONSTRAINT ukFincaAgricultor UNIQUE (AgricultorID, Nombre)
 EXEC sp_bindrule 'rCantidadMayor0', 'dbo.Fincas.Extension'
 GO
 
@@ -303,6 +290,7 @@ CREATE TABLE dbo.Lotes (
 	CONSTRAINT fkLoteTipoRiego FOREIGN KEY (TipoRiegoID) REFERENCES TipoRiego,
 	CONSTRAINT fkLoteTipoSuelo FOREIGN KEY (TipoSueloID) REFERENCES TipoSuelo
 )
+ALTER TABLE dbo.Lotes ADD CONSTRAINT ukLoteAgricultor UNIQUE (FincaID, Nombre)
 EXEC sp_bindrule 'rCantidadMayor0', 'dbo.Lotes.Extension'
 EXEC sp_bindrule 'rCantidadMayor0', 'dbo.Lotes.CantidadCosechas'
 GO
@@ -327,10 +315,15 @@ CREATE TABLE dbo.CosechaAgricultor (
     BodegaID		INT NOT NULL,
     Fecha			DATETIME NOT NULL,
 	Monto			FLOAT NOT NULL,
+	Estado			VARCHAR(50) NULL,
 	CONSTRAINT pkCosechaID PRIMARY KEY (CosechaID),
 	CONSTRAINT fkAgricultorCosecha FOREIGN KEY (AgricultorID) REFERENCES Agricultor,
 	CONSTRAINT fkBodegaCosecha FOREIGN KEY (BodegaID) REFERENCES Bodega
 )
+CREATE DEFAULT dftEstado AS ('Pendiente')
+ALTER TABLE dbo.CosechaAgricultor ADD CONSTRAINT ckEstadoCosechaAgricultor CHECK (Estado IN ('Pendiente','Liquidado'));
+GO
+EXEC sp_bindefault 'dftEstado', 'dbo.CosechaAgricultor.Estado' 
 EXEC sp_bindrule 'rCantidadMayor0', 'dbo.CosechaAgricultor.Monto'
 GO
 
@@ -340,13 +333,9 @@ CREATE TABLE dbo.CosechaDetalleAgricultor (
 	ProductoID		INT NOT NULL,
     Cantidad		INT NOT NULL,
 	Precio			NUMERIC(11,2) NOT NULL,
-	Tasa			NUMERIC(11,2) NOT NULL,
-	Descuento		NUMERIC(11,2) NOT NULL,
 	CONSTRAINT pkCosechaDetalleAgricultorID PRIMARY KEY (CosechaID, ProductoID),
 	CONSTRAINT fkCosechaDetalleCosecha FOREIGN KEY (CosechaID) REFERENCES CosechaAgricultor,
 )
-ALTER TABLE dbo.CosechaDetalleAgricultor ADD CONSTRAINT ckTasaProductosAgricolas CHECK (Tasa IN (0.12, 0.15, 0.18))
-ALTER TABLE dbo.CosechaDetalleAgricultor ADD CONSTRAINT ckDecuentoProductosAgricolas CHECK (Descuento BETWEEN 0 AND 1)
 EXEC sp_bindrule 'rCantidadMayor0', 'dbo.CosechaDetalleAgricultor.Cantidad'
 EXEC sp_bindrule 'rCantidadMayor0', 'dbo.CosechaDetalleAgricultor.Precio'
 GO
@@ -361,9 +350,13 @@ CREATE TABLE dbo.AgricultorInsumos
 	SubTotal			NUMERIC(11,2) NOT NULL,
 	Impuesto			NUMERIC(11,2) NOT NULL,
 	Descuento			NUMERIC(11,2) NOT NULL,
+	Estado				VARCHAR(50) NOT NULL,
 	CONSTRAINT pkAgricultorInsumosID PRIMARY KEY (AgricultorInsumoID),
 	CONSTRAINT fkAgricultorInsumoAgricultor FOREIGN KEY (AgricultorID) REFERENCES Agricultor,
 )
+GO
+EXEC sp_bindefault 'dftEstado', 'dbo.AgricultorInsumos.Estado' 
+ALTER TABLE dbo.AgricultorInsumos ADD CONSTRAINT ckEstadoAgricultorInsumos CHECK (Estado IN ('Pendiente','Cobrado'));
 GO
 
 --DROP TABLE dbo.AgricultorInsumosDetalle
@@ -373,7 +366,7 @@ CREATE TABLE dbo.AgricultorInsumosDetalle (
 	Cantidad				INT NOT NULL,
 	Precio					NUMERIC(11,2) NOT NULL,
 	Descuento				NUMERIC(11,2) NOT NULL,
-	Tasa				NUMERIC(11,2) NOT NULL,
+	Tasa					NUMERIC(11,2) NOT NULL,
 	CONSTRAINT pkAgricultorInsumoDetalleID PRIMARY KEY (AgricultorInsumoID, InsumoID),
 	CONSTRAINT fkAgrInsDetAgrIns FOREIGN KEY (AgricultorInsumoID) REFERENCES AgricultorInsumos,
 	CONSTRAINT fkAgricultorInsumosDetalleInsumos FOREIGN KEY (InsumoID) REFERENCES InsumosAgricolas
@@ -415,28 +408,28 @@ GO
 
 --DROP TABLE dbo.LiquidacionAgricultores
 CREATE TABLE dbo.LiquidacionAgricultores (
-    LiquidacionID		INT not null,
-    AgricultorID		INT not null,
-    Periodo				DATETIME not null,
-    TotalIngresos		FLOAT not null,
-    DeduccionInsumos	FLOAT not null,
+    LiquidacionID		INT NOT NULL,
+    TransaccionID		INT NOT NULL,
+    TotalIngresos		FLOAT NOT NULL,
+	AbonosAnteriores	FLOAT NOT NULL,
+    DeduccionInsumos	FLOAT NOT NULL,
 	CONSTRAINT pkLiquidacionAgricultoresID PRIMARY KEY (LiquidacionID),
-	CONSTRAINT fkLiquidacionAgricultores FOREIGN KEY (AgricultorID) REFERENCES Agricultor
+	CONSTRAINT fkLiquidacionTransaccion FOREIGN KEY (TransaccionID) REFERENCES Transaccion
 )
 GO
 
 --DROP TABLE dbo.AbonoAgricultores
 CREATE TABLE dbo.AbonoAgricultores (
     AbonoID				INT not null,
-    LiquidacionID		INT not null,
 	TransaccionID		INT not null,
-    Fecha				DATETIME not null,
-    MontoAbonado		NUMERIC(11,2) not null,
+    Monto				NUMERIC(11,2) not null,
+	Estado				VARCHAR(50) NOT NULL,
 	CONSTRAINT pkAbonoID PRIMARY KEY (AbonoID),
-	CONSTRAINT fkLiquidacionAbono FOREIGN KEY (LiquidacionID) REFERENCES LiquidacionAgricultores,
 	CONSTRAINT fkTransaccionAbono FOREIGN KEY (TransaccionID) REFERENCES Transaccion
 )
-EXEC sp_bindrule 'rCantidadMayor0', 'dbo.AbonoAgricultores.MontoAbonado'
+EXEC sp_bindefault 'dftEstado', 'dbo.AbonoAgricultores.Estado' 
+ALTER TABLE dbo.AbonoAgricultores ADD CONSTRAINT ckEstadoAbonos CHECK (Estado IN ('Pendiente','Aplicado'));
+EXEC sp_bindrule 'rCantidadMayor0', 'dbo.AbonoAgricultores.Monto'
 GO
 
 CREATE SCHEMA config

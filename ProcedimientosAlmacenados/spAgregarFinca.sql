@@ -12,3 +12,5 @@ AS
 	INSERT INTO Fincas (FincaID, AgricultorID, Nombre, Ubicacion, Extension) VALUES
 	(@fincaID, @agricultorID, @nombre, @ubicacion, @extension)
 GO
+
+SELECT * FROM Agricultor
