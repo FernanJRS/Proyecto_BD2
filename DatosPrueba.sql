@@ -113,5 +113,97 @@ EXEC spRegistrarCosecha
   @fecha        = '2025-07-30',
   @tdetalle     = @detalle;
 
+SELECT * FROM ProductosAgricolas
 SELECT * FROM CosechaAgricultor
-SELECT * FROM CosechaDetalleAgricultor
+SELECT * FROM CosechaDetalleAgricultor 
+
+-- Agregar Insumos
+EXEC spAgregarInsumo 
+  @nombre = 'Pesticida Orgánico', 
+  @tipoInsumo = 'Insumos Químicos', 
+  @descripcion = 'Pesticida de bajo impacto ambiental', 
+  @unidadMedida = 'galones';
+
+EXEC spAgregarInsumo 
+  @nombre = 'Herbicida Selectivo', 
+  @tipoInsumo = 'Insumos Químicos', 
+  @descripcion = 'Inhibe el crecimiento de malezas específicas', 
+  @unidadMedida = 'galones';
+
+EXEC spAgregarInsumo 
+  @nombre = 'Fertilizante Nitrogenado', 
+  @tipoInsumo = 'Insumos Químicos', 
+  @descripcion = 'Fertilizante con 30% de nitrógeno', 
+  @unidadMedida = 'galones';
+
+EXEC spAgregarInsumo 
+  @nombre = 'Bioinsecticida Líquido', 
+  @tipoInsumo = 'Insumos Biológicos', 
+  @descripcion = 'Control biológico de plagas', 
+  @unidadMedida = 'quintales';
+
+EXEC spAgregarInsumo 
+  @nombre = 'Abono Orgánico Granulado', 
+  @tipoInsumo = 'Insumos Biológicos', 
+  @descripcion = 'Abono natural para suelos', 
+  @unidadMedida = 'quintales';
+
+EXEC spAgregarInsumo 
+  @nombre = 'Compost Activado', 
+  @tipoInsumo = 'Insumos Biológicos', 
+  @descripcion = 'Mejora la estructura del suelo', 
+  @unidadMedida = 'quintales';
+
+EXEC spAgregarInsumo 
+  @nombre = 'Azada de Mano', 
+  @tipoInsumo = 'Herramientas Manuales', 
+  @descripcion = 'Azada de acero con mango de madera', 
+  @unidadMedida = 'unidad';
+
+EXEC spAgregarInsumo 
+  @nombre = 'Machete Agrícola', 
+  @tipoInsumo = 'Herramientas Manuales', 
+  @descripcion = 'Machete de hoja ancha para corte de maleza', 
+  @unidadMedida = 'unidad';
+
+EXEC spAgregarInsumo 
+  @nombre = 'Carretilla de Acero', 
+  @tipoInsumo = 'Herramientas Manuales', 
+  @descripcion = 'Capacidad de 100 kg, ruedas neumáticas', 
+  @unidadMedida = 'unidad';
+
+EXEC spAgregarInsumo 
+  @nombre = 'Sensor de Humedad', 
+  @tipoInsumo = 'Tecnología Agrícola', 
+  @descripcion = 'Sensor digital de humedad de suelo', 
+  @unidadMedida = 'unidad';
+
+EXEC spAgregarInsumo 
+  @nombre = 'GPS Agrícola', 
+  @tipoInsumo = 'Tecnología Agrícola', 
+  @descripcion = 'Sistema GPS para mapeo de parcelas', 
+  @unidadMedida = 'unidad';
+
+EXEC spAgregarInsumo 
+  @nombre = 'Controlador de Riego', 
+  @tipoInsumo = 'Tecnología Agrícola', 
+  @descripcion = 'Programador automático de riego', 
+  @unidadMedida = 'unidad';
+
+EXEC spAgregarInsumo 
+  @nombre = 'Tractor de 75 HP', 
+  @tipoInsumo = 'Maquinaria Agrícola', 
+  @descripcion = 'Tractor con cabina y tracción 4x4', 
+  @unidadMedida = 'unidad';
+
+EXEC spAgregarInsumo 
+  @nombre = 'Arado de Discos', 
+  @tipoInsumo = 'Maquinaria Agrícola', 
+  @descripcion = 'Arado para labranza profunda', 
+  @unidadMedida = 'unidad';
+
+EXEC spAgregarInsumo 
+  @nombre = 'Cosechadora de Granos', 
+  @tipoInsumo = 'Maquinaria Agrícola', 
+  @descripcion = 'Cosechadora autopropulsada', 
+  @unidadMedida = 'unidad';

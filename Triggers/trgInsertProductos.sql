@@ -14,7 +14,7 @@ AS
 	SELECT ProductoID FROM inserted;
 
 	OPEN crsProductos;
-
+	
 	FETCH NEXT FROM crsProductos INTO @productoID;
 
 	WHILE @@FETCH_STATUS = 0
@@ -22,12 +22,12 @@ AS
 			IF (SELECT Precio FROM inserted WHERE ProductoID = @productoID) > (SELECT Precio FROM @tPrecioGuardado WHERE ProductoID = @productoID)
 				BEGIN
 					UPDATE ProductosAgricolas SET Precio = (SELECT Precio FROM inserted WHERE ProductoID = @productoID), 
-					Existencias = Existencias + (SELECT Existencias FROM inserted WHERE ProductoID = @productoID)
+					Existencias = Existencias + (SELECT Cantidad FROM inserted WHERE ProductoID = @productoID)
 					WHERE ProductoID = @productoID
 				END
 			ELSE
 				BEGIN
-					UPDATE ProductosAgricolas SET Existencias = Existencias + (SELECT Existencias FROM inserted WHERE ProductoID = @productoID)
+					UPDATE ProductosAgricolas SET Existencias = Existencias + (SELECT Cantidad FROM inserted WHERE ProductoID = @productoID)
 					WHERE ProductoID = @productoID
 				END
 

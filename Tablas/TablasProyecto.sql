@@ -161,16 +161,16 @@ GO
 
 --DROP TABLE dbo.ProveedorInsumos
 CREATE TABLE dbo.ProveedorInsumos (
-    ProveedorID			INT NOT NULL,
-	CuentaID			INT NOT NULL,
-    Nombre				VARCHAR(100) NOT NULL,
-    Contacto			VARCHAR(100) NOT NULL,
-	TipoID				INT NOT NULL,
-    Direccion			VARCHAR(200) NOT NULL,
-	RTN					VARCHAR(20) NOT NULL,
-    Telefono			VARCHAR(20) NOT NULL,
-	Correo				VARCHAR(50) NOT NULL,
-	CondicionesCredito	VARCHAR(MAX),
+    ProveedorID				INT NOT NULL,
+	CuentaID				INT NOT NULL,
+    Nombre					VARCHAR(100) NOT NULL,
+    Contacto				VARCHAR(100) NOT NULL,
+	TipoID					INT NOT NULL,
+    Direccion				VARCHAR(200) NOT NULL,
+	RTN						VARCHAR(20) NOT NULL,
+    Telefono				VARCHAR(20) NOT NULL,
+	Correo					VARCHAR(50) NOT NULL,
+	CondicionesCredito		VARCHAR(MAX),
 	CONSTRAINT pkProveedorInsumosID PRIMARY KEY (ProveedorID),
 	CONSTRAINT fkCuentaProveedor FOREIGN KEY (CuentaID) REFERENCES CuentaBancaria,
 	CONSTRAINT fkProveedorTipo FOREIGN KEY (TipoID) REFERENCES TipoProveedor
@@ -190,10 +190,13 @@ CREATE TABLE dbo.CompraInsumos (
 	FechaVencimiento	DATETIME NOT NULL,
 	SubTotal			NUMERIC(11,2) NOT NULL,
 	Descuento			NUMERIC(11,2) NOT NULL,
+	Estado				VARCHAR(50),
 	CONSTRAINT pkCompraInsumoID PRIMARY KEY (CompraInsumosID),
 	CONSTRAINT fkProveedorCompra FOREIGN KEY (ProveedorID) REFERENCES ProveedorInsumos
 )
+EXEC sp_bindefault 'dftEstado', 'dbo.CompraInsumos.Estado' 
 ALTER TABLE dbo.CompraInsumos ADD CONSTRAINT ckFechaCompra CHECK (FechaCompra < FechaVencimiento)
+ALTER TABLE dbo.CompraInsumos ADD CONSTRAINT ckEstadoCompraInsumos CHECK (Estado IN ('Pendiente','Pagado'));
 GO
 
 --DROP TABLE dbo.TipoInsumo
@@ -350,11 +353,11 @@ CREATE TABLE dbo.AgricultorInsumos
 	SubTotal			NUMERIC(11,2) NOT NULL,
 	Impuesto			NUMERIC(11,2) NOT NULL,
 	Descuento			NUMERIC(11,2) NOT NULL,
-	Estado				VARCHAR(50) NOT NULL,
+	Estado				VARCHAR(50),
 	CONSTRAINT pkAgricultorInsumosID PRIMARY KEY (AgricultorInsumoID),
 	CONSTRAINT fkAgricultorInsumoAgricultor FOREIGN KEY (AgricultorID) REFERENCES Agricultor,
 )
-GO
+GO 
 EXEC sp_bindefault 'dftEstado', 'dbo.AgricultorInsumos.Estado' 
 ALTER TABLE dbo.AgricultorInsumos ADD CONSTRAINT ckEstadoAgricultorInsumos CHECK (Estado IN ('Pendiente','Cobrado'));
 GO
@@ -423,7 +426,7 @@ CREATE TABLE dbo.AbonoAgricultores (
     AbonoID				INT not null,
 	TransaccionID		INT not null,
     Monto				NUMERIC(11,2) not null,
-	Estado				VARCHAR(50) NOT NULL,
+	Estado				VARCHAR(50),
 	CONSTRAINT pkAbonoID PRIMARY KEY (AbonoID),
 	CONSTRAINT fkTransaccionAbono FOREIGN KEY (TransaccionID) REFERENCES Transaccion
 )
