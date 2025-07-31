@@ -5,10 +5,10 @@ CREATE OR ALTER TRIGGER trgInsertProductos ON CosechaDetalleAgricultor FOR INSER
 AS
 	DECLARE @productoID INT;
 
-	DECLARE @tPrecioGuardado TABLE (ProductoID INT, Precio NUMERIC(11,2));
+	DECLARE @tProductosGuardados TABLE (ProductoID INT, Precio NUMERIC(11,2), Existencias FLOAT);
 
-	INSERT INTO @tPrecioGuardado
-	SELECT ProductoID, Precio FROM ProductosAgricolas WHERE ProductoID IN (SELECT ProductoID FROM inserted);
+	INSERT INTO @tProductosGuardados
+	SELECT ProductoID, Precio, Existencias FROM ProductosAgricolas WHERE ProductoID IN (SELECT ProductoID FROM inserted);
 
 	DECLARE crsProductos CURSOR FOR
 	SELECT ProductoID FROM inserted;
@@ -22,7 +22,7 @@ AS
 	WHILE @@FETCH_STATUS = 0
 		BEGIN
 			SELECT @precioAnterior = Precio, 
-			@existenciasNuevas = Existencias + (SELECT Cantidad FROM inserted WHERE ProductoID = @productoID) FROM ProductosAgricolas WHERE ProductoID = @productoID;
+			@existenciasNuevas = Existencias + (SELECT Cantidad FROM inserted WHERE ProductoID = @productoID) FROM @tProductosGuardados WHERE ProductoID = @productoID;
 			
 			SELECT @precioNuevo = Precio FROM inserted WHERE ProductoID = @productoID;
 

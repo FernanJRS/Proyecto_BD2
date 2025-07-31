@@ -1,37 +1,55 @@
 USE GrupoNo4
 GO
 
-CREATE OR ALTER TRIGGER trgInsertInsumos ON CompraDetalleInsumos FOR INSERT
+CREATE OR ALTER TRIGGER trgInsertInsumos ON CompraInsumos FOR UPDATE
 AS
-	DECLARE @insumoID INT;
+	DECLARE @estadoIN VARCHAR(50), @estadoFI VARCHAR(50);
 
-	DECLARE @tPrecioGuardado TABLE (InsumoID INT, Precio NUMERIC(11,2));
+	SELECT @estadoIN = EstadoEntrega FROM deleted
 
-	INSERT INTO @tPrecioGuardado
-	SELECT InsumoID, Precio FROM InsumosAgricolas WHERE InsumoID IN (SELECT InsumoID FROM inserted);
+	SELECT @estadoFI = EstadoEntrega FROM inserted
 
-	DECLARE crsInsumos CURSOR FOR
-	SELECT InsumoID FROM inserted;
+	IF @estadoIN = 'Pendiente' AND @estadoFI = 'Entregado'
+	BEGIN
+		DECLARE @compraID INT;
+		
+		SELECT @compraID = CompraInsumosID FROM inserted;
 
-	OPEN crsInsumos;
-	
-	FETCH NEXT FROM crsInsumos INTO @insumoID;
+		DECLARE @tCompraDetalle TABLE (CompraID INT, InsumoID INT, Cantidad FLOAT, Precio FLOAT, Descuento FLOAT, Unidad VARCHAR(50));
 
-	DECLARE @precioAnterior FLOAT, @precioNuevo FLOAT, @existenciasNuevas FLOAT;
+		INSERT INTO @tCompraDetalle (CompraID, InsumoID, Cantidad, Precio, Descuento, Unidad)
+		SELECT * FROM CompraDetalleInsumos WHERE CompraInsumoID = @compraID;
+		
+		DECLARE @insumoID INT;
 
-	WHILE @@FETCH_STATUS = 0
-		BEGIN				
-			SELECT @precioAnterior = Precio, 
-			@existenciasNuevas = Existencias + (SELECT Cantidad FROM inserted WHERE InsumoID = @insumoID) FROM InsumosAgricolas WHERE InsumoID = @insumoID;
-			
-			SELECT @precioNuevo = Precio FROM inserted WHERE InsumoID = @insumoID;
-			
-			UPDATE InsumosAgricolas SET Precio = ((Existencias * @precioAnterior)+((@existenciasNuevas - Existencias) * @precioNuevo))/(@existenciasNuevas), 
-			Existencias = @existenciasNuevas
-			WHERE InsumoID = @insumoID;
-			
-			FETCH NEXT FROM crsInsumos INTO @insumoID;
-		END
+		DECLARE @tInsumosGuardados TABLE (InsumoID INT, Precio NUMERIC(11,2), Existencias FLOAT);
 
-	DEALLOCATE crsInsumos;
+		INSERT INTO @tInsumosGuardados
+		SELECT InsumoID, Precio, Existencias FROM InsumosAgricolas WHERE InsumoID IN (SELECT InsumoID FROM @tCompraDetalle);
+
+		DECLARE crsInsumos CURSOR FOR
+		SELECT InsumoID FROM @tCompraDetalle;
+
+		OPEN crsInsumos;
+		
+		FETCH NEXT FROM crsInsumos INTO @insumoID;
+
+		DECLARE @precioAnterior FLOAT, @precioNuevo FLOAT, @existenciasNuevas FLOAT;
+
+		WHILE @@FETCH_STATUS = 0
+			BEGIN				
+				SELECT @precioAnterior = Precio, 
+				@existenciasNuevas = Existencias + (SELECT Cantidad FROM @tCompraDetalle WHERE InsumoID = @insumoID) FROM @tInsumosGuardados WHERE InsumoID = @insumoID;
+				
+				SELECT @precioNuevo = Precio FROM @tCompraDetalle WHERE InsumoID = @insumoID;
+				
+				UPDATE InsumosAgricolas SET Precio = ((Existencias * @precioAnterior)+((@existenciasNuevas - Existencias) * @precioNuevo))/(@existenciasNuevas), 
+				Existencias = @existenciasNuevas
+				WHERE InsumoID = @insumoID;
+				
+				FETCH NEXT FROM crsInsumos INTO @insumoID;
+			END
+
+		DEALLOCATE crsInsumos;
+	END
 GO

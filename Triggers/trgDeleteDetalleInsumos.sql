@@ -13,14 +13,22 @@ AS
 	OPEN crsInsumos;
 
 	FETCH NEXT FROM crsInsumos INTO @compraID, @insumoID;
+	
+	DECLARE @tInsumosEliminados TABLE (InsumoID INT, Precio NUMERIC(11,2), Existencias FLOAT);
+
+	INSERT INTO @tInsumosEliminados
+	SELECT InsumoID, Precio, Existencias FROM InsumosAgricolas WHERE InsumoID IN (SELECT InsumoID FROM deleted);
+
+	DECLARE @precioGuardado FLOAT, @precioEliminado FLOAT, @existGuardado FLOAT, @existEliminadas FLOAT;
 
 	WHILE @@FETCH_STATUS = 0
 		BEGIN
-			SELECT @existAnterior = (SELECT Existencias FROM InsumosAgricolas WHERE InsumoID = @insumoID);
+			SELECT @existGuardado = Existencias, @precioGuardado = Precio FROM InsumosAgricolas WHERE InsumoID = @insumoID;
 
-			SELECT @existNuevas = @existAnterior - ISNULL((SELECT Cantidad FROM deleted WHERE CompraInsumoID = @compraID AND InsumoID = @insumoID), 0)
+			SELECT @existEliminadas = Cantidad, @precioEliminado = Precio FROM deleted WHERE CompraInsumoID = @compraID AND InsumoID = @insumoID;
 
-			UPDATE InsumosAgricolas SET Existencias = @existNuevas
+			UPDATE InsumosAgricolas SET Existencias = @existGuardado - @existEliminadas,
+			Precio = ((@precioGuardado * @existGuardado) - (@precioEliminado * @existEliminadas)) / (@existGuardado - @existEliminadas)
 			WHERE InsumoID = @insumoID;
 
 			FETCH NEXT FROM crsInsumos INTO @compraID, @insumoID;

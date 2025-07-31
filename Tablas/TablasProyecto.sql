@@ -154,7 +154,7 @@ CREATE TABLE dbo.CuentaBancaria
 	CONSTRAINT pkCuentaID PRIMARY KEY (CuentaID),
 	CONSTRAINT fkBancoCuenta FOREIGN KEY (BancoID) REFERENCES Banco
 )
-ALTER TABLE dbo.CuentaBancaria ADD CONSTRAINT ukNumeroCuenta UNIQUE (NumeroCuenta)
+ALTER TABLE dbo.CuentaBancaria ADD CONSTRAINT ukCuentaBancario UNIQUE (BancoID, NumeroCuenta)
 ALTER TABLE dbo.CuentaBancaria ADD CONSTRAINT ckTipoUsuarioCuenta CHECK (Tipo IN ('AG', 'PR'))
 ALTER TABLE dbo.CuentaBancaria ADD CONSTRAINT ckTipoCuentaBancaria CHECK (TipoCuenta IN ('A', 'C'))
 GO
@@ -191,8 +191,8 @@ CREATE TABLE dbo.CompraInsumos (
 	FechaVencimiento	DATETIME NOT NULL,
 	SubTotal			NUMERIC(11,2) NOT NULL,
 	Descuento			NUMERIC(11,2) NOT NULL,
-	EstadoPago			VARCHAR(50),
-	EstadoEntrega		VARCHAR(50),
+	EstadoPago			VARCHAR(50), -- Pendiente o Pagado
+	EstadoEntrega		VARCHAR(50), -- Pendiente o Entregado
 	CONSTRAINT pkCompraInsumoID PRIMARY KEY (CompraInsumosID),
 	CONSTRAINT fkProveedorCompra FOREIGN KEY (ProveedorID) REFERENCES ProveedorInsumos
 )
