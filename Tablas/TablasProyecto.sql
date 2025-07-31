@@ -154,6 +154,7 @@ CREATE TABLE dbo.CuentaBancaria
 	CONSTRAINT pkCuentaID PRIMARY KEY (CuentaID),
 	CONSTRAINT fkBancoCuenta FOREIGN KEY (BancoID) REFERENCES Banco
 )
+ALTER TABLE dbo.CuentaBancaria ADD CONSTRAINT ukNumeroCuenta UNIQUE (NumeroCuenta)
 ALTER TABLE dbo.CuentaBancaria ADD CONSTRAINT ckTipoUsuarioCuenta CHECK (Tipo IN ('AG', 'PR'))
 ALTER TABLE dbo.CuentaBancaria ADD CONSTRAINT ckTipoCuentaBancaria CHECK (TipoCuenta IN ('A', 'C'))
 GO
@@ -174,7 +175,7 @@ CREATE TABLE dbo.ProveedorInsumos (
 	CONSTRAINT pkProveedorInsumosID PRIMARY KEY (ProveedorID),
 	CONSTRAINT fkCuentaProveedor FOREIGN KEY (CuentaID) REFERENCES CuentaBancaria,
 	CONSTRAINT fkProveedorTipo FOREIGN KEY (TipoID) REFERENCES TipoProveedor
-)
+) 
 ALTER TABLE dbo.ProveedorInsumos ADD CONSTRAINT ckCorreoProveedor CHECK (Correo LIKE '%@%.%')
 ALTER TABLE dbo.ProveedorInsumos ADD CONSTRAINT ckRTNProveedor CHECK (LEN(RTN) = 14)
 ALTER TABLE dbo.ProveedorInsumos ADD CONSTRAINT ckTelefonoProveedor CHECK ((LEN(REPLACE(Telefono, '-', '')) = 8) AND (CAST(LEFT(Telefono, 1) AS INT) IN (3, 8, 9)))
@@ -190,13 +191,16 @@ CREATE TABLE dbo.CompraInsumos (
 	FechaVencimiento	DATETIME NOT NULL,
 	SubTotal			NUMERIC(11,2) NOT NULL,
 	Descuento			NUMERIC(11,2) NOT NULL,
-	Estado				VARCHAR(50),
+	EstadoPago			VARCHAR(50),
+	EstadoEntrega		VARCHAR(50),
 	CONSTRAINT pkCompraInsumoID PRIMARY KEY (CompraInsumosID),
 	CONSTRAINT fkProveedorCompra FOREIGN KEY (ProveedorID) REFERENCES ProveedorInsumos
 )
-EXEC sp_bindefault 'dftEstado', 'dbo.CompraInsumos.Estado' 
+EXEC sp_bindefault 'dftEstado', 'dbo.CompraInsumos.EstadoPago'
+EXEC sp_bindefault 'dftEstado', 'dbo.CompraInsumos.EstadoEntrega'
 ALTER TABLE dbo.CompraInsumos ADD CONSTRAINT ckFechaCompra CHECK (FechaCompra < FechaVencimiento)
-ALTER TABLE dbo.CompraInsumos ADD CONSTRAINT ckEstadoCompraInsumos CHECK (Estado IN ('Pendiente','Pagado'));
+ALTER TABLE dbo.CompraInsumos ADD CONSTRAINT ckEstadoCompraInsumos CHECK (EstadoPago IN ('Pendiente','Pagado'));
+ALTER TABLE dbo.CompraInsumos ADD CONSTRAINT ckEstadoEntregaInsumos CHECK (EstadoEntrega IN ('Pendiente','Entregado'));
 GO
 
 --DROP TABLE dbo.TipoInsumo

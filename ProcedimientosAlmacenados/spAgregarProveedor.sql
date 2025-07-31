@@ -2,10 +2,9 @@ USE GrupoNo4
 GO
 
 --sp_help 'dbo.ProveedorInsumos'
-
 CREATE OR ALTER PROCEDURE spAgregarProveedor 
-@proveedor VARCHAR(100), @tipoProveedor VARCHAR(100), @contacto VARCHAR(100), @direccion VARCHAR(200), @telefono VARCHAR(20), @correo VARCHAR(50), @condCredito VARCHAR(MAX),
-@nombreBanco VARCHAR (100), @numCuenta VARCHAR(100), @tipoCuenta VARCHAR(50)
+@proveedor VARCHAR(100), @tipoProveedor VARCHAR(100), @contacto VARCHAR(100), @direccion VARCHAR(200), @telefono VARCHAR(20), @correo VARCHAR(50), @rtn VARCHAR(20),
+@condCredito VARCHAR(MAX), @nombreBanco VARCHAR (100), @numCuenta VARCHAR(100), @tipoCuenta VARCHAR(50)
 AS
 	BEGIN TRANSACTION
 		DECLARE @err INT = 0;
@@ -35,8 +34,8 @@ AS
 
 		SELECT @tipoID = TipoID FROM TipoProveedor WHERE Nombre = @tipoProveedor
 
-		INSERT INTO ProveedorInsumos (ProveedorID, CuentaID, Nombre, Contacto, TipoID, Direccion, Telefono, Correo, CondicionesCredito) VALUES
-		(@proveedorID, @cuentaID, @proveedor, @contacto, @tipoID, @direccion, @telefono, @correo, @condiciones)
+		INSERT INTO ProveedorInsumos (ProveedorID, CuentaID, Nombre, Contacto, TipoID, Direccion, Telefono, Correo, RTN, CondicionesCredito) VALUES
+		(@proveedorID, @cuentaID, @proveedor, @contacto, @tipoID, @direccion, @telefono, @correo, @rtn, @condiciones)
 		
 		IF @@ERROR <> 0 AND @err = 0 SELECT @err = 1
 

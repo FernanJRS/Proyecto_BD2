@@ -17,20 +17,19 @@ AS
 	
 	FETCH NEXT FROM crsInsumos INTO @insumoID;
 
-	WHILE @@FETCH_STATUS = 0
-		BEGIN
-			IF (SELECT Precio FROM inserted WHERE InsumoID = @insumoID) > (SELECT Precio FROM @tPrecioGuardado WHERE InsumoID = @insumoID)
-				BEGIN
-					UPDATE InsumosAgricolas SET Precio = (SELECT Precio FROM inserted WHERE InsumoID = @insumoID), 
-					Existencias = Existencias + (SELECT Cantidad FROM inserted WHERE InsumoID = @insumoID)
-					WHERE InsumoID = @insumoID;
-				END
-			ELSE
-				BEGIN
-					UPDATE InsumosAgricolas SET Existencias = Existencias + (SELECT Cantidad FROM inserted WHERE InsumoID = @insumoID)
-					WHERE InsumoID = @insumoID
-				END
+	DECLARE @precioAnterior FLOAT, @precioNuevo FLOAT, @existenciasNuevas FLOAT;
 
+	WHILE @@FETCH_STATUS = 0
+		BEGIN				
+			SELECT @precioAnterior = Precio, 
+			@existenciasNuevas = Existencias + (SELECT Cantidad FROM inserted WHERE InsumoID = @insumoID) FROM InsumosAgricolas WHERE InsumoID = @insumoID;
+			
+			SELECT @precioNuevo = Precio FROM inserted WHERE InsumoID = @insumoID;
+			
+			UPDATE InsumosAgricolas SET Precio = ((Existencias * @precioAnterior)+((@existenciasNuevas - Existencias) * @precioNuevo))/(@existenciasNuevas), 
+			Existencias = @existenciasNuevas
+			WHERE InsumoID = @insumoID;
+			
 			FETCH NEXT FROM crsInsumos INTO @insumoID;
 		END
 
