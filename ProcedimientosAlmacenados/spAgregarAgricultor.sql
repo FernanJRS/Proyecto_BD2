@@ -1,5 +1,6 @@
 USE GrupoNo4
 GO
+
 -- Agregar/Crear Agricultor
 CREATE OR ALTER PROCEDURE spAgregarAgricultor 
 @nombre VARCHAR(100), @dni VARCHAR(50), @telefono VARCHAR(30), @direccion VARCHAR(MAX), @email VARCHAR(100),
@@ -7,6 +8,12 @@ CREATE OR ALTER PROCEDURE spAgregarAgricultor
 AS
 	BEGIN TRANSACTION
 		DECLARE @err INT = 0;
+
+		DECLARE @municipio INT, @departamento INT;
+
+		SELECT @municipio = SUBSTRING(@dni, 3, 2), @departamento = SUBSTRING(@dni, 1, 2);
+
+		IF @municipio NOT BETWEEN 1 AND dbo.fMunicipioMax(@departamento) SELECT @err = 1;
 
 		DECLARE @bancoID INT, @cuentaID INT, @tipoCuentaBancaria CHAR(1);
 

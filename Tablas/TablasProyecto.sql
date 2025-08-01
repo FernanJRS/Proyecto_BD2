@@ -263,7 +263,7 @@ CREATE TABLE dbo.Agricultor (
 ALTER TABLE dbo.Agricultor ADD CONSTRAINT ckCorreoAgricultor CHECK (Correo LIKE '%@%.%')
 ALTER TABLE dbo.Agricultor ADD CONSTRAINT ukIdentidadAgricultor UNIQUE (Identidad) 
 ALTER TABLE dbo.Agricultor ADD CONSTRAINT ckIdentidadAgricultor CHECK ((LEN(REPLACE(Identidad, '-', '')) = 13) AND (CAST(LEFT(Identidad, 2) AS INT) BETWEEN 1 AND 18) AND 
-CAST(SUBSTRING(identidad, 6, 4) AS INT) < YEAR(GETDATE()))
+CAST(SUBSTRING(identidad, 6, 4) AS INT) <= (YEAR(GETDATE()) - 18))
 ALTER TABLE dbo.Agricultor ADD CONSTRAINT ckTelefonoAgricultor CHECK ((LEN(REPLACE(Telefono, '-', '')) = 8) AND (CAST(LEFT(Telefono, 1) AS INT) IN (3, 8, 9)))
 GO
 
