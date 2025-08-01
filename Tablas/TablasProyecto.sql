@@ -35,14 +35,15 @@ CREATE TABLE dbo.Cliente
 	TipoIdentidad	CHAR(1) NOT NULL, -- C = Cedula, R = RTN
 	Identidad		VARCHAR(20) NOT NULL,
 	Direccion		VARCHAR(150) NOT NULL,
-	Telefono		VARCHAR(100) NOT NULL,
+	Telefono		VARCHAR(30) NOT NULL,
 	CONSTRAINT pkClienteID PRIMARY KEY (ClienteID),
 )
 GO
 ALTER TABLE dbo.Cliente ADD CONSTRAINT ukIdentidad UNIQUE (Identidad)
-ALTER TABLE dbo.Cliente ADD CONSTRAINT ukTelefono UNIQUE (Telefono)
-ALTER TABLE dbo.Cliente ADD CONSTRAINT ckIdentidad CHECK ((TipoIdentidad = 'C' AND LEN(REPLACE(Identidad, '-', '')) = 13)
-OR (TipoIdentidad = 'R' AND LEN(Identidad) = 14))
+ALTER TABLE dbo.Cliente ADD CONSTRAINT ukTelefonoCliente UNIQUE (Telefono)
+ALTER TABLE dbo.CLiente ADD CONSTRAINT ckTelefonoCliente CHECK ((LEN(REPLACE(Telefono, '-', '')) = 8) AND (CAST(LEFT(Telefono, 1) AS INT) IN (3, 8, 9)))
+ALTER TABLE dbo.Cliente ADD CONSTRAINT ckIdentidad CHECK ((TipoIdentidad = 'C' AND (LEN(REPLACE(Identidad, '-', '')) = 13) AND (CAST(LEFT(Identidad, 2) AS INT) BETWEEN 1 AND 18) AND 
+CAST(SUBSTRING(identidad, 6, 4) AS INT) <= (YEAR(GETDATE()) - 18)) OR (TipoIdentidad = 'R' AND LEN(Identidad) = 14))
 GO
 
 CREATE RULE rCantidadMayor0 AS @col >= 0
@@ -71,17 +72,6 @@ CREATE TABLE dbo.TipoProducto
 )
 INSERT INTO dbo.TipoProducto VALUES (1, 'Cultivo Alimenticio'), (2, 'Cultivo Industrial'),
 (3, 'Cultivo Forrajero'), (4, 'Plantas Ornamentales'), (5, 'Plantas Medicinales')
-GO
-
--- DROP TABLE UnidadMedida
-CREATE TABLE UnidadMedida
-(
-	UnidadID	INT NOT NULL,
-	Nombre		VARCHAR(100) NOT NULL,
-	CONSTRAINT pkUnidadMedidaID PRIMARY KEY (UnidadID)
-)
-INSERT INTO dbo.UnidadMedida VALUES (1, 'Kilogramo'), (2, 'Quintal'), (3, 'Fardo'), 
-(4, 'Caja'), (5,'Saco'), (6, 'Litro'), (7, 'Unidad Individual')
 GO
 
 --DROP TABLE dbo.ProductosAgricolas
@@ -262,6 +252,7 @@ CREATE TABLE dbo.Agricultor (
 )
 ALTER TABLE dbo.Agricultor ADD CONSTRAINT ckCorreoAgricultor CHECK (Correo LIKE '%@%.%')
 ALTER TABLE dbo.Agricultor ADD CONSTRAINT ukIdentidadAgricultor UNIQUE (Identidad) 
+ALTER TABLE dbo.Agricultor ADD CONSTRAINT ukTelefono UNIQUE (Telefono)
 ALTER TABLE dbo.Agricultor ADD CONSTRAINT ckIdentidadAgricultor CHECK ((LEN(REPLACE(Identidad, '-', '')) = 13) AND (CAST(LEFT(Identidad, 2) AS INT) BETWEEN 1 AND 18) AND 
 CAST(SUBSTRING(identidad, 6, 4) AS INT) <= (YEAR(GETDATE()) - 18))
 ALTER TABLE dbo.Agricultor ADD CONSTRAINT ckTelefonoAgricultor CHECK ((LEN(REPLACE(Telefono, '-', '')) = 8) AND (CAST(LEFT(Telefono, 1) AS INT) IN (3, 8, 9)))

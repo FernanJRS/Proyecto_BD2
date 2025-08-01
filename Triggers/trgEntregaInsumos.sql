@@ -11,7 +11,7 @@ AS
 	DECLARE @agricultorInsumoID INT, @insumoID INT;
 
 	DECLARE crsInsumos CURSOR FOR
-	SELECT AgricultorInsumoID, InsumoID FROM inserted;
+	SELECT InsumoID FROM inserted;
 
 	OPEN crsInsumos;
 

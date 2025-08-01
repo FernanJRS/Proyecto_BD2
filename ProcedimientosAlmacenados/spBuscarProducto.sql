@@ -1,4 +1,6 @@
 USE GrupoNo4
+GO
+
 CREATE OR ALTER PROCEDURE spBuscarProducto
     @Codigo VARCHAR(50)
 AS

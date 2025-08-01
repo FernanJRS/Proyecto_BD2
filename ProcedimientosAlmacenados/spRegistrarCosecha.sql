@@ -2,11 +2,11 @@ USE GrupoNo4
 GO
 
 CREATE OR ALTER PROCEDURE spRegistrarCosecha
-@agricultorID INT, @bodega VARCHAR(100), @fecha DATETIME, @tdetalle DetalleCosecha READONLY
+@agricultorID INT, @finca VARCHAR(100), @bodega VARCHAR(100), @fecha DATETIME, @tdetalle DetalleCosecha READONLY
 AS
 	BEGIN TRANSACTION
 		DECLARE @err INT = 0;
-		DECLARE @cosechaID INT, @bodegaID INT;
+		DECLARE @cosechaID INT, @bodegaID INT, @cantidadCosechas FLOAT;
 
 		SELECT @cosechaID = ISNULL(MAX(CosechaID), 0) + 1 FROM CosechaAgricultor;
 
@@ -30,6 +30,29 @@ AS
 		WHERE CosechaID = @cosechaID;
 
 		IF @@ERROR <> 0 AND @err = 0 SELECT @err = 1;
+
+		DECLARE @codigo INT;
+
+		DECLARE crsCosechas CURSOR FOR
+		SELECT Codigo FROM @tdetalle;
+
+		OPEN crsCosechas;
+
+		FETCH NEXT FROM crsCosechas INTO @codigo;
+
+		WHILE @@FETCH_STATUS = 0
+			BEGIN
+				SELECT @cantidadCosechas = SUM(Cantidad) FROM @tdetalle WHERE Codigo = @codigo;
+
+				UPDATE Lotes SET CantidadCosechas = @cantidadCosechas
+				WHERE FincaID = (SELECT FincaID FROM Fincas WHERE Nombre = @finca) AND ProductoID = CAST(RIGHT(@codigo, 3) AS INT);
+
+				IF @@ERROR <> 0 AND @err = 0 SELECT @err = 1;
+
+				FETCH NEXT FROM crsCosechas INTO @codigo;
+			END
+
+			DEALLOCATE crsCosechas;
 
 	IF @err = 0
 		COMMIT TRANSACTION;
