@@ -374,60 +374,41 @@ EXEC sp_bindrule 'rCantidadMayor0', 'dbo.AgricultorInsumosDetalle.Precio'
 
 GO
 
--- DROP TABLE dbo.Transaccion
-CREATE TABLE dbo.Transaccion
+-----------------------------------------------------------------------------------------------------------------------------------------------
+-- DROP TABLE dbo.PagoAgricultores
+CREATE TABLE dbo.PagoAgricultores
 (
-	TransaccionID		INT NOT NULL,
-	CuentaID			INT NOT NULL,
+	PagoID				INT NOT NULL,
+	AgricultorID		INT NOT NULL,
+	CosechaID			INT NOT NULL,
 	Fecha				DATETIME NOT NULL,
-	Tipo				CHAR(1) NOT NULL, -- C = Cheque D = Deposito
+	Tipo				CHAR(1) NOT NULL, -- A = Abono, L = Liquidacion
+	MetodoPago			CHAR(1) NOT NULL, -- C = Cheque D = Deposito
 	Monto				NUMERIC(11,2) NOT NULL,
-	CONSTRAINT pkTransaccionID PRIMARY KEY (TransaccionID),
-	CONSTRAINT fkCuentaTransaccion FOREIGN KEY (CuentaID) REFERENCES CuentaBancaria
+	CONSTRAINT pkPagoAgricultoresID PRIMARY KEY (PagoID),
+	CONSTRAINT fkAgricultorPago FOREIGN KEY (AgricultorID) REFERENCES Agricultor,
+	CONSTRAINT fkCosechaPago FOREIGN KEY (CosechaID) REFERENCES CosechaAgricultor
 )
-ALTER TABLE dbo.Transaccion ADD CONSTRAINT ckTipoTransaccion CHECK (Tipo IN ('C', 'D'))
-EXEC sp_bindrule 'rCantidadMayor0', 'dbo.Transaccion.Monto'
+ALTER TABLE dbo.PagoAgricultores ADD CONSTRAINT ckTipoPagoAgricultor CHECK (Tipo IN ('A', 'L'))
+ALTER TABLE dbo.PagoAgricultores ADD CONSTRAINT ckMetodoPagoAgricultor CHECK (MetodoPago IN ('C', 'D'))
+EXEC sp_bindrule 'rCantidadMayor0', 'dbo.PagoAgricultores.Monto'
 GO
 
--- DROP TABLE dbo.PagosProveedores
-CREATE TABLE dbo.PagosProveedores
+-- DROP TABLE dbo.PagoProveedores
+CREATE TABLE dbo.PagoProveedores
 (
-	PagoID			INT NOT NULL,
-	TransaccionID	INT NOT NULL,
-	CompraInsumoID	INT NOT NULL,
-	Fecha			DATETIME NOT NULL,
-	Monto			NUMERIC(11,2) NOT NULL,
+	PagoID				INT NOT NULL,
+	ProveedorID			INT NOT NULL,
+	CompraInsumoID		INT NOT NULL,
+	Fecha				DATETIME NOT NULL,
+	MetodoPago			CHAR(1) NOT NULL, -- C = Cheque, D = Deposito
+	Monto				NUMERIC(11,2) NOT NULL,
 	CONSTRAINT pkPagoID PRIMARY KEY (PagoID),
-	CONSTRAINT fkTransaccionPago FOREIGN KEY (TransaccionID) REFERENCES Transaccion,
+	CONSTRAINT fkProveedorPago FOREIGN KEY (ProveedorID) REFERENCES ProveedorInsumos,
 	CONSTRAINT fkCompraInsumoPago FOREIGN KEY (CompraInsumoID) REFERENCES CompraInsumos
 )
-EXEC sp_bindrule 'rCantidadMayor0', 'dbo.PagosProveedores.Monto'
-GO
-
---DROP TABLE dbo.LiquidacionAgricultores
-CREATE TABLE dbo.LiquidacionAgricultores (
-    LiquidacionID		INT NOT NULL,
-    TransaccionID		INT NOT NULL,
-    TotalIngresos		FLOAT NOT NULL,
-	AbonosAnteriores	FLOAT NOT NULL,
-    DeduccionInsumos	FLOAT NOT NULL,
-	CONSTRAINT pkLiquidacionAgricultoresID PRIMARY KEY (LiquidacionID),
-	CONSTRAINT fkLiquidacionTransaccion FOREIGN KEY (TransaccionID) REFERENCES Transaccion
-)
-GO
-
---DROP TABLE dbo.AbonoAgricultores
-CREATE TABLE dbo.AbonoAgricultores (
-    AbonoID				INT not null,
-	TransaccionID		INT not null,
-    Monto				NUMERIC(11,2) not null,
-	Estado				VARCHAR(50),
-	CONSTRAINT pkAbonoID PRIMARY KEY (AbonoID),
-	CONSTRAINT fkTransaccionAbono FOREIGN KEY (TransaccionID) REFERENCES Transaccion
-)
-EXEC sp_bindefault 'dftEstado', 'dbo.AbonoAgricultores.Estado' 
-ALTER TABLE dbo.AbonoAgricultores ADD CONSTRAINT ckEstadoAbonos CHECK (Estado IN ('Pendiente','Aplicado'));
-EXEC sp_bindrule 'rCantidadMayor0', 'dbo.AbonoAgricultores.Monto'
+ALTER TABLE dbo.PagoProveedores ADD CONSTRAINT ckMetodoPagoProveedor CHECK (MetodoPago IN ('C', 'D'))
+EXEC sp_bindrule 'rCantidadMayor0', 'dbo.PagoProveedores.Monto'
 GO
 
 CREATE SCHEMA config
