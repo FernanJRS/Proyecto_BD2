@@ -28,6 +28,11 @@ AS
 
 		IF @@ERROR <> 0 AND @err = 0 SELECT @err = 1;
 
+		UPDATE CompraInsumos SET EstadoPago = 'L'
+		WHERE CompraInsumosID = @compraInsumoID AND ProveedorID = @proveedorID;
+
+		IF @@ERROR <> 0 AND @err = 0 SELECT @err = 1;
+
 		IF @err = 0 
 			COMMIT TRANSACTION;
 		ELSE

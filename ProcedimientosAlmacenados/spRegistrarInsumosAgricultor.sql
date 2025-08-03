@@ -12,21 +12,21 @@ AS
 
 		SELECT @agricultorInsumoID = ISNULL(MAX(AgricultorInsumoID), 0) + 1 FROM AgricultorInsumos;
 
-		INSERT INTO AgricultorInsumos (AgricultorInsumoID, AgricultorID, Fecha, SubTotal, Descuento)
-		VALUES (@agricultorInsumoID, @agricultorID, @fecha, 0.00, 0.00);
+		INSERT INTO AgricultorInsumos (AgricultorInsumoID, AgricultorID, Fecha, SubTotal, Descuento, Impuesto)
+		VALUES (@agricultorInsumoID, @agricultorID, @fecha, 0.00, 0.00, 0.00);
+		
+		IF @@ERROR <> 0 AND @err = 0 SELECT @err = 1;
+		
+		INSERT INTO AgricultorInsumosDetalle (AgricultorInsumoID, InsumoID, Cantidad, Precio, Descuento, Tasa)
+		SELECT @agricultorInsumoID, CAST(RIGHT(Codigo, 3) AS INT), Cantidad, Precio, Descuento, 0.05 FROM @tDetalle
 
 		IF @@ERROR <> 0 AND @err = 0 SELECT @err = 1;
 
-		INSERT INTO AgricultorInsumosDetalle (AgricultorInsumoID, InsumoID, Cantidad, Precio, Descuento)
-		SELECT @agricultorInsumoID, CAST(RIGHT(Codigo, 3) AS INT), Cantidad, Precio, Descuento FROM @tDetalle
+		DECLARE @subTotal FLOAT, @desc FLOAT, @imp FLOAT;
 
-		IF @@ERROR <> 0 AND @err = 0 SELECT @err = 1;
+		SELECT @subTotal = SUM(Cantidad * Precio), @desc = SUM(Cantidad * Precio * Descuento), @imp = SUM(Cantidad * Precio * 0.05) FROM @tDetalle;
 
-		DECLARE @subTotal FLOAT, @desc FLOAT;
-
-		SELECT @subTotal = SUM(Cantidad * Precio), @desc = SUM(Cantidad * Precio * Descuento) FROM @tDetalle;
-
-		UPDATE AgricultorInsumos SET SubTotal = @subTotal, Descuento = @desc
+		UPDATE AgricultorInsumos SET SubTotal = @subTotal, Descuento = @desc, Impuesto = @imp
 		WHERE AgricultorInsumoID = @agricultorInsumoID;
 
 		IF @@ERROR <> 0 AND @err = 0 SELECT @err = 1;

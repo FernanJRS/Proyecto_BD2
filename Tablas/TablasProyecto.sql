@@ -181,16 +181,17 @@ CREATE TABLE dbo.CompraInsumos (
 	FechaVencimiento	DATETIME NOT NULL,
 	SubTotal			NUMERIC(11,2) NOT NULL,
 	Descuento			NUMERIC(11,2) NOT NULL,
-	EstadoPago			VARCHAR(50), -- Pendiente o Pagado
-	EstadoEntrega		VARCHAR(50), -- Pendiente o Entregado
+	EstadoPago			CHAR(1) NULL, -- P = Pendiente, L =Liquidado
+	EstadoEntrega		CHAR(1) NULL, -- P = Pendiente, E = Entregado
 	CONSTRAINT pkCompraInsumoID PRIMARY KEY (CompraInsumosID),
 	CONSTRAINT fkProveedorCompra FOREIGN KEY (ProveedorID) REFERENCES ProveedorInsumos
 )
+CREATE DEFAULT dftEstado AS ('P') -- Pendiente
 EXEC sp_bindefault 'dftEstado', 'dbo.CompraInsumos.EstadoPago'
 EXEC sp_bindefault 'dftEstado', 'dbo.CompraInsumos.EstadoEntrega'
 ALTER TABLE dbo.CompraInsumos ADD CONSTRAINT ckFechaCompra CHECK (FechaCompra < FechaVencimiento)
-ALTER TABLE dbo.CompraInsumos ADD CONSTRAINT ckEstadoCompraInsumos CHECK (EstadoPago IN ('Pendiente','Pagado'));
-ALTER TABLE dbo.CompraInsumos ADD CONSTRAINT ckEstadoEntregaInsumos CHECK (EstadoEntrega IN ('Pendiente','Entregado'));
+ALTER TABLE dbo.CompraInsumos ADD CONSTRAINT ckEstadoCompraInsumos CHECK (EstadoPago IN ('P','L'));
+ALTER TABLE dbo.CompraInsumos ADD CONSTRAINT ckEstadoEntregaInsumos CHECK (EstadoEntrega IN ('P','E'));
 GO
 
 --DROP TABLE dbo.TipoInsumo
@@ -313,13 +314,12 @@ CREATE TABLE dbo.CosechaAgricultor (
     BodegaID		INT NOT NULL,
     Fecha			DATETIME NOT NULL,
 	Monto			FLOAT NOT NULL,
-	Estado			VARCHAR(50) NULL,
+	Estado			CHAR(1) NULL, -- P = Pendiente, L = Liquidado
 	CONSTRAINT pkCosechaID PRIMARY KEY (CosechaID),
 	CONSTRAINT fkAgricultorCosecha FOREIGN KEY (AgricultorID) REFERENCES Agricultor,
 	CONSTRAINT fkBodegaCosecha FOREIGN KEY (BodegaID) REFERENCES Bodega
 )
-CREATE DEFAULT dftEstado AS ('Pendiente')
-ALTER TABLE dbo.CosechaAgricultor ADD CONSTRAINT ckEstadoCosechaAgricultor CHECK (Estado IN ('Pendiente','Liquidado'));
+ALTER TABLE dbo.CosechaAgricultor ADD CONSTRAINT ckEstadoCosechaAgricultor CHECK (Estado IN ('P','L'));
 GO
 EXEC sp_bindefault 'dftEstado', 'dbo.CosechaAgricultor.Estado' 
 EXEC sp_bindrule 'rCantidadMayor0', 'dbo.CosechaAgricultor.Monto'
@@ -348,13 +348,13 @@ CREATE TABLE dbo.AgricultorInsumos
 	SubTotal			NUMERIC(11,2) NOT NULL,
 	Impuesto			NUMERIC(11,2) NOT NULL,
 	Descuento			NUMERIC(11,2) NOT NULL,
-	Estado				VARCHAR(50),
+	Estado				CHAR(1) NULL, -- P = Pendiente, C = Cobrado
 	CONSTRAINT pkAgricultorInsumosID PRIMARY KEY (AgricultorInsumoID),
 	CONSTRAINT fkAgricultorInsumoAgricultor FOREIGN KEY (AgricultorID) REFERENCES Agricultor,
 )
 GO 
 EXEC sp_bindefault 'dftEstado', 'dbo.AgricultorInsumos.Estado' 
-ALTER TABLE dbo.AgricultorInsumos ADD CONSTRAINT ckEstadoAgricultorInsumos CHECK (Estado IN ('Pendiente','Cobrado'));
+ALTER TABLE dbo.AgricultorInsumos ADD CONSTRAINT ckEstadoAgricultorInsumos CHECK (Estado IN ('P','C'));
 GO
 
 --DROP TABLE dbo.AgricultorInsumosDetalle
