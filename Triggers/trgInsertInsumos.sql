@@ -9,7 +9,7 @@ AS
 
 	SELECT @estadoFI = EstadoEntrega FROM inserted
 
-	IF @estadoIN = 'Pendiente' AND @estadoFI = 'Entregado'
+	IF @estadoIN = 'P' AND @estadoFI = 'E'
 	BEGIN
 		DECLARE @compraID INT;
 		
@@ -27,12 +27,12 @@ AS
 		INSERT INTO @tInsumosGuardados
 		SELECT InsumoID, Precio, Existencias FROM InsumosAgricolas WHERE InsumoID IN (SELECT InsumoID FROM @tCompraDetalle);
 
-		DECLARE crsInsumos CURSOR FOR
+		DECLARE crsInsertInsumos CURSOR FOR
 		SELECT InsumoID FROM @tCompraDetalle;
 
-		OPEN crsInsumos;
+		OPEN crsInsertInsumos;
 		
-		FETCH NEXT FROM crsInsumos INTO @insumoID;
+		FETCH NEXT FROM crsInsertInsumos INTO @insumoID;
 
 		DECLARE @precioAnterior FLOAT, @precioNuevo FLOAT, @existenciasNuevas FLOAT;
 
@@ -47,9 +47,9 @@ AS
 				Existencias = @existenciasNuevas
 				WHERE InsumoID = @insumoID;
 				
-				FETCH NEXT FROM crsInsumos INTO @insumoID;
+				FETCH NEXT FROM crsInsertInsumos INTO @insumoID;
 			END
 
-		DEALLOCATE crsInsumos;
+		DEALLOCATE crsInsertInsumos;
 	END
 GO

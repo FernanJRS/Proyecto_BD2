@@ -24,8 +24,8 @@ AS
 			SELECT @existGuardadas = Existencias FROM @tProductosVendidos WHERE ProductoID = @productoID;
 
 			SELECT @existFacturadas = CASE Unidad
-										   WHEN 'Fardo' THEN Cantidad * 0.20
-										   WHEN 'Arroba' THEN Cantidad * 0.25
+										   WHEN 'Fardos' THEN Cantidad * 0.20
+										   WHEN 'Arrobas' THEN Cantidad * 0.25
 										   ELSE Cantidad 
 										   END 
 										   FROM inserted

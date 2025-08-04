@@ -10,12 +10,12 @@ AS
 
 	DECLARE @agricultorInsumoID INT, @insumoID INT;
 
-	DECLARE crsInsumos CURSOR FOR
-	SELECT InsumoID FROM inserted;
+	DECLARE crsEntregaInsumos CURSOR FOR
+	SELECT AgricultorInsumoID, InsumoID FROM inserted;
 
-	OPEN crsInsumos;
+	OPEN crsEntregaInsumos;
 
-	FETCH NEXT FROM crsInsumos INTO @agricultorInsumoID, @insumoID;
+	FETCH NEXT FROM crsEntregaInsumos INTO @agricultorInsumoID, @insumoID;
 
 	DECLARE @existGuardadas FLOAT, @existFacturadas FLOAT;
 
@@ -28,8 +28,8 @@ AS
 			UPDATE InsumosAgricolas SET Existencias = @existGuardadas - @existFacturadas
 			WHERE InsumoID = @insumoID;
 
-			FETCH NEXT FROM crsInsumos INTO @agricultorInsumoID, @insumoID;
+			FETCH NEXT FROM crsEntregaInsumos INTO @agricultorInsumoID, @insumoID;
 		END
 
-	DEALLOCATE crsInsumos;
+	DEALLOCATE crsEntregaInsumos;
 GO

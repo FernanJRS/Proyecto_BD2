@@ -32,7 +32,6 @@ EXEC spAgregarAgricultor
     @TipoCuenta = 'ahorro',
     @NumCuenta = 'A00011223344';
 GO
-
 -- Productos Agrícolas
 EXEC spAgregarProducto @nombre = 'Maíz',       @tipo = 'Cultivo Alimenticio';
 EXEC spAgregarProducto @nombre = 'Algodón',    @tipo = 'Cultivo Industrial';
@@ -63,6 +62,8 @@ EXEC spAgregarFinca
   
 -- Lotes de Prueba
  -- Finca 1: un lote de Maíz (AGR-001), 5 ha
+ 
+
 EXEC spAgregarLoteFinca
   @fincaID        = 1,
   @codigoProducto = 'AGR-001',
@@ -73,7 +74,7 @@ EXEC spAgregarLoteFinca
 
 -- Finca 2: un lote de Algodón (AGR-002), 6 ha
 EXEC spAgregarLoteFinca
-  @fincaID        = 2,
+  @fincaID        = 1,
   @codigoProducto = 'AGR-002',
   @nombre         = 'Lote Algodón Norte',
   @extension      = 6.00,
@@ -82,10 +83,10 @@ EXEC spAgregarLoteFinca
 
 -- Finca 3: primer lote de Alfalfa (AGR-003), 10 ha
 EXEC spAgregarLoteFinca
-  @fincaID        = 3,
+  @fincaID        = 2,
   @codigoProducto = 'AGR-003',
   @nombre         = 'Lote Alfalfa A',
-  @extension      = 10.00,
+  @extension      = 20.00,
   @tipoSuelo      = 'Suelo Limoso',
   @tipoRiego      = 'Riego por Inundación';
 
@@ -104,16 +105,17 @@ DECLARE @detalle DetalleCosecha;
 
 INSERT INTO @detalle (Codigo, Producto, Cantidad, Unidad, Precio)
 VALUES
-  ('AGR-003', 'Alfalfa', 10000.00, 'quintales', 80.00),
-  ('AGR-004', 'Rosas', 5000.00, 'quintales', 1200.00);
+  ('AGR-001', 'Maiz', 5000.00, 'Quintales', 550.00)
+  --('AGR-004', 'Algodon', 2000.00, 'quintales', 2500.00);
 
 EXEC spRegistrarCosecha
-  @agricultorID = 3,
+  @agricultorID = 2,
+  @finca = 1,
   @bodega       = 'Bodega 1',
   @fecha        = '2025-07-30',
   @tdetalle     = @detalle;
-
-SELECT * FROM ProductosAgricolas
+  
+SELECT * FROM ProductosAgricolas 
 SELECT * FROM CosechaAgricultor
 SELECT * FROM CosechaDetalleAgricultor 
 
@@ -207,3 +209,87 @@ EXEC spAgregarInsumo
   @tipoInsumo = 'Maquinaria Agrícola', 
   @descripcion = 'Cosechadora autopropulsada', 
   @unidadMedida = 'unidad';
+GO
+
+SELECT * FROM ProveedorInsumos
+
+DECLARE @proveedorID INT = 1;
+DECLARE @fechaCompra DATE = GETDATE();
+DECLARE @fechaVencimiento DATE = DATEADD(DAY, 30, @fechaCompra);
+
+DECLARE @tDetalle DetalleInsumo;
+
+INSERT INTO @tDetalle (Codigo, Insumo, Cantidad, Unidad, Precio, Descuento)
+VALUES ('INS-001', 'Pesticida Orgánico', 10, 'galones', 250.00, 0.00),
+('INS-002', 'Herbicida Selectivo', 5, 'galones', 300.00, 0.10);
+
+EXEC dbo.spRegistrarOrdenInsumos
+    @proveedorID = @proveedorID,
+    @fechaCompra = @fechaCompra,
+    @fechaVencimiento = @fechaVencimiento,
+    @tDetalle = @tDetalle;
+
+EXEC dbo.spRegistrarIngresoInsumos 2;
+
+SELECT * FROM CompraInsumos
+SELECT * FROM CompraDetalleInsumos
+SELECT * FROM InsumosAgricolas
+
+DECLARE @tDetalle DetalleInsumo, @fecha DATETIME = GETDATE();
+
+INSERT INTO @tDetalle (Codigo, Insumo, Cantidad, Unidad, Precio, Descuento)
+VALUES ('INS-001', 'Pesticida Orgánico', 5, 'galones', 250.00, 0.00)
+
+EXEC dbo.spRegistrarInsumosAgricultor 2, @fecha, @tDetalle
+
+SELECT * FROM AgricultorInsumos
+
+DECLARE @fecha1 DATETIME = GETDATE(), @pago FLOAT;
+
+SELECT @pago = (SELECT dbo.fSaldoPendienteProveedorPorCompra(3, 1))
+
+EXEC spRegistrarPagoProveedor 1, 1, @fecha1, 'Deposito', @pago
+
+SELECT * FROM PagoProveedores
+
+DECLARE @fecha3 DATETIME = GETDATE(), @saldo1 FLOAT, @saldo2 FLOAT, @monto FLOAT, @tDeduccion InsumosDeducidos;
+
+SELECT @saldo1 = (SELECT dbo.fLiquidacionPendienteAgricultorPorCosecha(4, 2))
+
+SELECT @saldo2 = (SELECT dbo.fSaldoPendienteAgricultorPorCosecha(3, 2))
+
+INSERT INTO @tDeduccion (AgricultorInsumoID)
+SELECT AgricultorInsumoID FROM dbo.ftInsumosPendientesAgricultor(2, @saldo1);
+
+SELECT @monto = @saldo1 - (SELECT dbo.fDeduccionInsumosAgricultor(@tDeduccion))
+
+SELECT @monto
+
+--DECLARE @deposito FLOAT = @saldo2 * 0.01;
+
+--EXEC spRegistrarAbonoAgricultor 2, 1, @fecha3, 'Deposito', 1100000.00
+EXEC spRegistrarLiquidacionAgricultor 2, 4, @fecha3, 'Deposito', @monto
+
+SELECT * FROM PagoAgricultores
+SELECT * FROM AgricultorInsumos
+
+SELECT * FROM PagoProveedores
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+SELECT * FROM Cliente
+EXEC spAgregarCliente 'Patricio', 'DNI', '0401-2004-00584', 'En algún lugar', '9982-9141'
+
+DECLARE @ff DATETIME = GETDATE();
+
+DECLARE @tVentas DetalleVenta;
+
+INSERT INTO @tVentas
+VALUES ('AGR-001', 'Maíz', 300, 'Fardos', 650.00, 0)
+
+EXEC spFacturarProductos 1, 'Contado', @ff, @tVentas
+
+
+SELECT * FROM PagoAgricultores
+
+SELECT * FROM AgricultorInsumos

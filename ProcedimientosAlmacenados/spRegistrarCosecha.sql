@@ -19,7 +19,7 @@ AS
 		
 		INSERT INTO CosechaDetalleAgricultor (CosechaID, ProductoID, Cantidad, Precio)
 		SELECT @cosechaID, CAST(RIGHT(Codigo, 3) AS INT), Cantidad, Precio FROM @tdetalle;
-
+		
 		IF @@ERROR <> 0 AND @err = 0 SELECT @err = 1;
 
 		DECLARE @total FLOAT;
@@ -31,7 +31,7 @@ AS
 
 		IF @@ERROR <> 0 AND @err = 0 SELECT @err = 1;
 
-		DECLARE @codigo INT;
+		DECLARE @codigo VARCHAR(10);
 
 		DECLARE crsCosechas CURSOR FOR
 		SELECT Codigo FROM @tdetalle;

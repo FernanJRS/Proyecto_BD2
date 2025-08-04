@@ -19,15 +19,14 @@ AS
 
 	SELECT @otrosLotes = ISNULL(SUM(Extension), 0) FROM Lotes WHERE FincaID = @fincaID
 
-	IF @extension < (@areaFinca - @otrosLotes)
+	IF @extension <= (@areaFinca - @otrosLotes)
 		BEGIN
 			INSERT INTO Lotes (FincaID, LoteID, ProductoID, Nombre, Extension, TipoSueloID, TipoRiegoID)
 			VALUES (@fincaID, @loteID, @productoID, @nombre, @extension, @sueloID, @riegoID);
 		END
 	
 	IF @extension > (@areaFinca - @otrosLotes)
-		INSERT INTO Lotes VALUES (NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-		
+		THROW 50000, 'La extensión del lote no puede ser mayor que la de la finca', 1;
 GO
 
 SELECT * FROM ProductosAgricolas

@@ -18,7 +18,7 @@ AS
 
 		INSERT INTO CompraDetalleInsumos (CompraInsumoID, InsumoID, Cantidad, Unidad, Precio, Descuento)
 		SELECT @compraID, CAST(RIGHT(Codigo, 3) AS INT), Cantidad, Unidad, Precio, Descuento FROM @tDetalle;
-
+		
 		IF @@ERROR <> 0 AND @err = 0 SELECT @err = 1;
 
 		DECLARE @subTotal FLOAT, @descuento FLOAT;

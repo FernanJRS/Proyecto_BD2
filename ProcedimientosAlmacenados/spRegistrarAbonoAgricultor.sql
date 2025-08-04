@@ -20,7 +20,10 @@ AS
 		
 		DECLARE @saldo FLOAT = (SELECT dbo.fSaldoPendienteAgricultorPorCosecha(@cosechaID, @agricultorID));
 
-		IF @monto > (@saldo * 0.60) SELECT @err = 1;
+		DECLARE @montoMasAbono FLOAT = (SELECT SUM(Monto) FROM PagoAgricultores WHERE AgricultorID = @agricultorID AND CosechaID = @cosechaID AND Tipo = 'A') + @monto;
+
+		IF (@montoMasAbono / @saldo) > 0.60 
+			THROW 50000, 'Los abonos no pueden superar el 60% del total de la cosecha', 1;
 
 		INSERT INTO PagoAgricultores(PagoID, AgricultorID, CosechaID, Fecha, Tipo, MetodoPago, Monto)
 		VALUES (@pagoID, @agricultorID, @cosechaID, @fecha, 'A', @metodo, @monto);

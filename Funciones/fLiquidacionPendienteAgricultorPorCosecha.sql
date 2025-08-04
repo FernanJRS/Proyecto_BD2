@@ -9,12 +9,12 @@ AS
 		SELECT @saldoPendiente = Monto FROM CosechaAgricultor
 		WHERE CosechaID = @cosechaID AND AgricultorID = @agricultorID AND Estado = 'P';
 
-		SELECT @abonosPrevios = SUM(Monto) FROM PagoAgricultores
+		SELECT @abonosPrevios = SUM(ISNULL(Monto, 0)) FROM PagoAgricultores
 		WHERE AgricultorID = @agricultorID AND CosechaID = @cosechaID AND Tipo = 'A';
 
 		DECLARE @saldo FLOAT = 0;
 
-		SELECT @saldo = @saldoPendiente - @abonosPrevios;
+		SELECT @saldo = @saldoPendiente - ISNULL(@abonosPrevios, 0);
 
 		RETURN @saldo
 	END

@@ -21,7 +21,8 @@ AS
 
 		SELECT @saldo = (SELECT dbo.fSaldoPendienteProveedorPorCompra(@proveedorID, @compraInsumoID));
 
-		IF @monto > @saldo SELECT @err = 1;
+		IF @monto <> @saldo 
+			THROW 50000, 'El monto no puede ser distinto que el saldo pendiente', 1;
 
 		INSERT INTO PagoProveedores (PagoID, ProveedorID, CompraInsumoID, Fecha, MetodoPago, Monto)
 		VALUES (@pagoID, @proveedorID, @compraInsumoID, @fecha, @metodo, @monto)

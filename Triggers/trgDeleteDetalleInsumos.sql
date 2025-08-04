@@ -17,22 +17,25 @@ AS
 	DECLARE @tInsumosEliminados TABLE (InsumoID INT, Precio NUMERIC(11,2), Existencias FLOAT);
 
 	INSERT INTO @tInsumosEliminados
-	SELECT InsumoID, Precio, Existencias FROM InsumosAgricolas WHERE InsumoID IN (SELECT InsumoID FROM deleted);
+	SELECT InsumoID, Precio, ISNULL(Existencias, 0) FROM InsumosAgricolas WHERE InsumoID IN (SELECT InsumoID FROM deleted);
 
 	DECLARE @precioGuardado FLOAT, @precioEliminado FLOAT, @existGuardado FLOAT, @existEliminadas FLOAT;
 
-	WHILE @@FETCH_STATUS = 0
+	IF (SELECT EstadoEntrega FROM CompraInsumos WHERE CompraInsumosID = @compraID) = 'E'
 		BEGIN
-			SELECT @existGuardado = Existencias, @precioGuardado = Precio FROM InsumosAgricolas WHERE InsumoID = @insumoID;
+			WHILE @@FETCH_STATUS = 0
+				BEGIN
+					SELECT @existGuardado = Existencias, @precioGuardado = Precio FROM InsumosAgricolas WHERE InsumoID = @insumoID;
 
-			SELECT @existEliminadas = Cantidad, @precioEliminado = Precio FROM deleted WHERE CompraInsumoID = @compraID AND InsumoID = @insumoID;
+					SELECT @existEliminadas = Cantidad, @precioEliminado = Precio FROM deleted WHERE CompraInsumoID = @compraID AND InsumoID = @insumoID;
 
-			UPDATE InsumosAgricolas SET Existencias = @existGuardado - @existEliminadas,
-			Precio = ((@precioGuardado * @existGuardado) - (@precioEliminado * @existEliminadas)) / (@existGuardado - @existEliminadas)
-			WHERE InsumoID = @insumoID;
+					UPDATE InsumosAgricolas SET Existencias = ISNULL(@existGuardado, 0) - ISNULL(@existEliminadas, 0),
+					Precio = ((@precioGuardado * @existGuardado) - (@precioEliminado * @existEliminadas)) / (@existGuardado - @existEliminadas)
+					WHERE InsumoID = @insumoID;
 
-			FETCH NEXT FROM crsInsumos INTO @compraID, @insumoID;
+					FETCH NEXT FROM crsInsumos INTO @compraID, @insumoID;
+				END
+			
+			DEALLOCATE crsInsumos;
 		END
-
-	DEALLOCATE crsInsumos;
 GO

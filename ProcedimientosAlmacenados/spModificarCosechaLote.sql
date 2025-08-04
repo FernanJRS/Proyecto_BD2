@@ -9,5 +9,5 @@ AS
 		WHERE FincaID = @fincaID AND LoteID = @loteID;
 
 	IF @fechaSiembra > GETDATE()
-		INSERT INTO Lotes VALUES (NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+		THROW 50000, 'La fecha de siembra no puede ser mayor que la fecha actual', 1;
 GO

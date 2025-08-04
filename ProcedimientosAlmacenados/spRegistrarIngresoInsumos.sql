@@ -3,7 +3,7 @@ GO
 
 CREATE OR ALTER PROCEDURE spRegistrarIngresoInsumos @compraID INT
 AS
-	DECLARE @estado VARCHAR(50) = 'Entregado'
+	DECLARE @estado VARCHAR(50) = 'E'
 	
 	UPDATE CompraInsumos SET EstadoEntrega = @estado
 	WHERE CompraInsumosID = @compraID

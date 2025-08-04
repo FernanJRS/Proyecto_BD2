@@ -238,7 +238,7 @@ CREATE TABLE dbo.CompraDetalleInsumos
 ALTER TABLE dbo.CompraDetalleInsumos ADD CONSTRAINT ckDecuentoInsumos CHECK (Descuento BETWEEN 0 AND 1)
 EXEC sp_bindrule 'rCantidadMayor0', 'dbo.CompraDetalleInsumos.Precio'
 GO
-
+sp_help 'CompraDetalleInsumos'
 --DROP TABLE dbo.Agricultor
 CREATE TABLE dbo.Agricultor (
     AgricultorID	INT NOT NULL,
