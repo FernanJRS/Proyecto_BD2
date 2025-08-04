@@ -26,7 +26,7 @@ AS
 			SELECT @existFacturadas = CASE Unidad
 										   WHEN 'Fardos' THEN Cantidad * 0.20
 										   WHEN 'Arrobas' THEN Cantidad * 0.25
-										   ELSE Cantidad 
+										   WHEN 'Quintales' THEN Cantidad
 										   END 
 										   FROM inserted
 			WHERE FacturaID = @facturaID AND ProductoID = @productoID;

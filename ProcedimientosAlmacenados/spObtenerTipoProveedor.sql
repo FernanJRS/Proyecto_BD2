@@ -7,4 +7,3 @@ BEGIN
     FROM TipoProveedor
     ORDER BY TipoID
 END
-select * from UnidadMedida
