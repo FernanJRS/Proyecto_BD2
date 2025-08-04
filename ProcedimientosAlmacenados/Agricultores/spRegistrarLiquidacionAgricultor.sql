@@ -42,8 +42,7 @@ AS
 
 				SELECT @montoPendiente = @saldo - @deduccionInsumos;
 
-				IF @montoPendiente <> @monto 
-					THROW 50000, 'El monto ingresado no puede ser distinto que el saldo pendiente', 1;
+				IF @montoPendiente <> @monto SELECT @err = 1;
 
 				INSERT INTO PagoAgricultores (PagoID, AgricultorID, CosechaID, Fecha, Tipo, MetodoPago, Monto)
 				VALUES (@pagoID, @agricultorID, @cosechaID, @fecha, 'L', @metodo, @monto);

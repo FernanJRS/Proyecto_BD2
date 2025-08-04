@@ -12,5 +12,6 @@ SELECT ci.ProveedorID,
 FROM   CompraInsumos  ci
 LEFT  JOIN PagoProveedores pp ON pp.CompraInsumoID = ci.CompraInsumosID
 JOIN   ProveedorInsumos pr ON pr.ProveedorID = ci.ProveedorID
+WHERE ci.EstadoEntrega = 'E'
 GROUP BY ci.ProveedorID, pr.Nombre;
 GO

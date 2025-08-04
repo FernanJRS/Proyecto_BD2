@@ -18,6 +18,7 @@ AS
 	SELECT ProductoID, Precio, Existencias FROM ProductosAgricolas WHERE ProductoID IN (SELECT ProductoID FROM deleted);
 
 	DECLARE @precioGuardado FLOAT, @precioEliminado FLOAT, @existGuardado FLOAT, @existEliminadas FLOAT;
+	DECLARE @diferencia FLOAT, @dividiendo FLOAT;
 
 	WHILE @@FETCH_STATUS = 0
 		BEGIN
@@ -25,8 +26,13 @@ AS
 
 			SELECT @existEliminadas = Cantidad, @precioEliminado = Precio FROM deleted WHERE CosechaID = @cosechaID AND ProductoID = @productoID
 
-			UPDATE ProductosAgricolas SET Existencias = @existGuardado - @existEliminadas,
-			Precio = ((@precioGuardado * @existGuardado) - (@precioEliminado * @existEliminadas)) / (@existGuardado - @existEliminadas)
+			SELECT @diferencia = @existGuardado - @existEliminadas, @dividiendo = (@precioGuardado * ISNULL(@existGuardado, 1)) - (@precioEliminado * ISNULL(@existEliminadas, 1));
+
+			IF @diferencia = 0 SELECT @diferencia = 1;
+			IF @dividiendo = 0 SELECT @dividiendo = 1;
+
+			UPDATE ProductosAgricolas SET Existencias = ISNULL(@existGuardado, 1) - ISNULL(@existEliminadas, 1),
+			Precio = (@dividiendo) / (@diferencia)
 			WHERE ProductoID = @productoID;
 
 			FETCH NEXT FROM crsProducto INTO @cosechaID, @productoID;

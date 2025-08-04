@@ -28,7 +28,3 @@ AS
 	IF @extension > (@areaFinca - @otrosLotes)
 		THROW 50000, 'La extensión del lote no puede ser mayor que la de la finca', 1;
 GO
-
-SELECT * FROM ProductosAgricolas
-SELECT * FROM TipoRiego
-SELECT * FROM TipoSuelo

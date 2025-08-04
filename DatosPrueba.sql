@@ -38,84 +38,287 @@ EXEC spAgregarProducto @nombre = 'Algodón',    @tipo = 'Cultivo Industrial';
 EXEC spAgregarProducto @nombre = 'Alfalfa',    @tipo = 'Cultivo Forrajero';
 EXEC spAgregarProducto @nombre = 'Rosas',      @tipo = 'Plantas Ornamentales';
 EXEC spAgregarProducto @nombre = 'Aloe Vera',  @tipo = 'Plantas Medicinales';
+EXEC spAgregarProducto 'Frijoles', 'Cultivo Alimenticio';
+EXEC spAgregarProducto 'Arroz', 'Cultivo Alimenticio';
+EXEC spAgregarProducto 'Café', 'Cultivo Alimenticio';
+EXEC spAgregarProducto 'Plátano', 'Cultivo Alimenticio';
+EXEC spAgregarProducto 'Caña de Azúcar', 'Cultivo Alimenticio';
+EXEC spAgregarProducto 'Tomate', 'Cultivo Alimenticio';
+EXEC spAgregarProducto 'Cebolla', 'Cultivo Alimenticio';
+EXEC spAgregarProducto 'Papa', 'Cultivo Alimenticio';
+EXEC spAgregarProducto 'Yuca', 'Cultivo Alimenticio';
+EXEC spAgregarProducto 'Sandía', 'Cultivo Alimenticio';
+EXEC spAgregarProducto 'Melón', 'Cultivo Alimenticio';
+EXEC spAgregarProducto 'Piña', 'Cultivo Alimenticio';
+EXEC spAgregarProducto 'Naranja', 'Cultivo Alimenticio';
+EXEC spAgregarProducto 'Limón', 'Cultivo Alimenticio';
+EXEC spAgregarProducto 'Mango', 'Cultivo Alimenticio';
+EXEC spAgregarProducto 'Aguacate', 'Cultivo Alimenticio';
+EXEC spAgregarProducto 'Lechuga', 'Cultivo Alimenticio';
+EXEC spAgregarProducto 'Zanahoria', 'Cultivo Alimenticio';
+EXEC spAgregarProducto 'Pepino', 'Cultivo Alimenticio';
+EXEC spAgregarProducto 'Repollo', 'Cultivo Alimenticio';
+EXEC spAgregarProducto 'Ajo', 'Cultivo Alimenticio';
+EXEC spAgregarProducto 'Cilantro', 'Cultivo Alimenticio';
+EXEC spAgregarProducto 'Perejil', 'Cultivo Alimenticio';
+EXEC spAgregarProducto 'Espinaca', 'Cultivo Alimenticio';
+EXEC spAgregarProducto 'Apio', 'Cultivo Alimenticio';
+EXEC spAgregarProducto 'Rábano', 'Cultivo Alimenticio';
+EXEC spAgregarProducto 'Berenjena', 'Cultivo Alimenticio';
+EXEC spAgregarProducto 'Pimiento', 'Cultivo Alimenticio';
+EXEC spAgregarProducto 'Calabaza', 'Cultivo Alimenticio';
+EXEC spAgregarProducto 'Chayote', 'Cultivo Alimenticio';
+EXEC spAgregarProducto 'Guayaba', 'Cultivo Alimenticio';
+EXEC spAgregarProducto 'Papaya', 'Cultivo Alimenticio';
+EXEC spAgregarProducto 'Maracuyá', 'Cultivo Alimenticio';
+EXEC spAgregarProducto 'Fresa', 'Cultivo Alimenticio';
+EXEC spAgregarProducto 'Uva', 'Cultivo Alimenticio';
+EXEC spAgregarProducto 'Tabaco', 'Cultivo Industrial';
+EXEC spAgregarProducto 'Henequén', 'Cultivo Industrial';
+EXEC spAgregarProducto 'Palma Africana', 'Cultivo Industrial';
+EXEC spAgregarProducto 'Caucho', 'Cultivo Industrial';
+EXEC spAgregarProducto 'Pasto Estrella', 'Cultivo Forrajero';
+EXEC spAgregarProducto 'Pasto Guinea', 'Cultivo Forrajero';
+EXEC spAgregarProducto 'Pasto Elefante', 'Cultivo Forrajero';
+EXEC spAgregarProducto 'Manzanilla', 'Plantas Medicinales';
+EXEC spAgregarProducto 'Ruda', 'Plantas Medicinales';
 GO
 
 -- Agregar Fincas
 EXEC spAgregarFinca 
-  @AgricultorID = 1, 
-  @Nombre       = 'Finca El Paraíso', 
-  @Ubicacion    = 'Col. Palmira, Tegucigalpa', 
-  @Extension    = 25.50;  -- 25.50 ha (≈255 000 m²)
+    @agricultorID = 3, 
+    @nombre = 'Finca El Encanto', 
+    @ubicacion = 'Tatumbla, Fco. Morazán', 
+    @extension = 12.5; -- ha
 
 EXEC spAgregarFinca 
-  @AgricultorID = 2, 
-  @Nombre       = 'Finca Miravalles', 
-  @Ubicacion    = 'Col. Miraflores, Tegucigalpa', 
-  @Extension    = 18.00;  -- 18.00 ha (≈180 000 m²)
+    @agricultorID = 4, 
+    @nombre = 'Finca La Esperanza', 
+    @ubicacion = 'Santa Ana, Fco. Morazán', 
+    @extension = 8.3; -- ha
 
 EXEC spAgregarFinca 
-  @AgricultorID = 3, 
-  @Nombre       = 'Finca La Esperanza', 
-  @Ubicacion    = 'Col. Kennedy, Tegucigalpa', 
-  @Extension    = 30.75;  -- 30.75 ha (≈307 500 m²)
-  GO
-  
+    @agricultorID = 4, 
+    @nombre = 'Finca Los Pinos', 
+    @ubicacion = 'Valle de Ángeles', 
+    @extension = 15.0; -- ha
+ 
+EXEC spAgregarFinca 
+    @agricultorID = 5, 
+    @nombre = 'Finca Tierra Fértil', 
+    @ubicacion = 'El Zamorano', 
+    @extension = 10.7; -- ha
+
+EXEC spAgregarFinca 
+    @agricultorID = 5, 
+    @nombre = 'Finca La Cumbre', 
+    @ubicacion = 'San Juancito', 
+    @extension = 6.9; -- ha
+
 -- Lotes de Prueba
- -- Finca 1: un lote de Maíz (AGR-001), 5 ha
+EXEC spAgregarLoteFinca 
+    @fincaID = 3, 
+    @codigoProducto = 'AGR-001', -- Maíz
+    @nombre = 'Lote Maicero',
+    @extension = 5.0, -- ha
+    @tipoSuelo = 'Suelo Franco',
+    @tipoRiego = 'Riego por Gravedad';
+	
+EXEC spAgregarLoteFinca 
+    @fincaID = 3, 
+    @codigoProducto = 'AGR-008', -- Café
+    @nombre = 'Lote Cafetal',
+    @extension = 4.0, -- ha
+    @tipoSuelo = 'Suelo Arcilloso',
+    @tipoRiego = 'Riego por Goteo';
  
+ EXEC spAgregarLoteFinca 
+    @fincaID = 4, 
+    @codigoProducto = 'AGR-017', -- Piña
+    @nombre = 'Lote Tropical',
+    @extension = 3.5, -- ha
+    @tipoSuelo = 'Suelo Arenoso',
+    @tipoRiego = 'Riego por Aspersión';
 
-EXEC spAgregarLoteFinca
-  @fincaID        = 1,
-  @codigoProducto = 'AGR-001',
-  @nombre         = 'Lote Maíz Principal',
-  @extension      = 5.00,
-  @tipoSuelo      = 'Suelo Franco',
-  @tipoRiego      = 'Riego por Aspersión';
+EXEC spAgregarLoteFinca 
+    @fincaID = 4, 
+    @codigoProducto = 'AGR-004', -- Rosas
+    @nombre = 'Lote Floral',
+    @extension = 6.0, -- ha
+    @tipoSuelo = 'Suelo Humífero',
+    @tipoRiego = 'Riego por Nebulización';
 
--- Finca 2: un lote de Algodón (AGR-002), 6 ha
-EXEC spAgregarLoteFinca
-  @fincaID        = 1,
-  @codigoProducto = 'AGR-002',
-  @nombre         = 'Lote Algodón Norte',
-  @extension      = 6.00,
-  @tipoSuelo      = 'Suelo Arcilloso',
-  @tipoRiego      = 'Riego por Goteo';
+EXEC spAgregarLoteFinca 
+    @fincaID = 4, 
+    @codigoProducto = 'AGR-039', -- Fresa
+    @nombre = 'Lote Frutal',
+    @extension = 3.5, -- ha
+    @tipoSuelo = 'Suelo Limoso',
+    @tipoRiego = 'Riego por Microaspersión';
 
--- Finca 3: primer lote de Alfalfa (AGR-003), 10 ha
-EXEC spAgregarLoteFinca
-  @fincaID        = 2,
-  @codigoProducto = 'AGR-003',
-  @nombre         = 'Lote Alfalfa A',
-  @extension      = 20.00,
-  @tipoSuelo      = 'Suelo Limoso',
-  @tipoRiego      = 'Riego por Inundación';
+EXEC spAgregarLoteFinca 
+    @fincaID = 5, 
+    @codigoProducto = 'AGR-045', -- Pasto Estrella
+    @nombre = 'Lote Forrajero',
+    @extension = 4.5, -- ha
+    @tipoSuelo = 'Suelo Marga',
+    @tipoRiego = 'Riego por Superficie';
 
--- Finca 3: segundo lote de Rosas (AGR-004), 12 ha
-EXEC spAgregarLoteFinca
-  @fincaID        = 3,
-  @codigoProducto = 'AGR-004',
-  @nombre         = 'Lote Rosas B',
-  @extension      = 12.00,
-  @tipoSuelo      = 'Suelo Humífero',
-  @tipoRiego      = 'Riego por Aspersión';
- 
+EXEC spAgregarLoteFinca 
+    @fincaID = 5, 
+    @codigoProducto = 'AGR-002', -- Algodón
+    @nombre = 'Lote Algodonero',
+    @extension = 3.0, -- ha
+    @tipoSuelo = 'Suelo Calizo',
+    @tipoRiego = 'Riego por Cañón Viajero';
+
+ -- Proveedores
+ EXEC spAgregarProveedor 
+    @proveedor = 'AgroSoluciones HN',
+    @tipoProveedor = 'Proveedor de Agroquímicos',
+    @contacto = 'Carlos Mejía',
+    @direccion = 'Col. Miraflores, Tegucigalpa',
+    @telefono = '99887766',
+    @correo = 'contacto@agrosolhn.com',
+    @rtn = '08011999123456',
+    @condCredito = '30 días neto, sin intereses',
+    @nombreBanco = 'BAC Honduras',
+    @numCuenta = '301020304050',
+    @tipoCuenta = 'cheques';
+
+EXEC spAgregarProveedor 
+    @proveedor = 'Herramientas del Campo',
+    @tipoProveedor = 'Proveedor de Herramientas',
+    @contacto = 'Ana Rodríguez',
+    @direccion = 'Barrio El Centro, Danlí',
+    @telefono = '98765432',
+    @correo = 'ventas@herramientascampo.hn',
+    @rtn = '08011998223344',
+    @condCredito = 'Pago contra entrega',
+    @nombreBanco = 'Banco Ficohsa',
+    @numCuenta = '110022334455',
+    @tipoCuenta = 'ahorro';
+
+EXEC spAgregarProveedor 
+    @proveedor = 'Materiales Agroindustriales',
+    @tipoProveedor = 'Proveedor de Materiales Complementarios',
+    @contacto = 'José Martínez',
+    @direccion = 'Bo. Abajo, San Pedro Sula',
+    @telefono = '91234567',
+    @correo = 'info@agroindustriales.hn',
+    @rtn = '08011997334455',
+    @condCredito = '15 días con descuento del 5%',
+    @nombreBanco = 'Banco de Occidente',
+    @numCuenta = '556677889900',
+    @tipoCuenta = 'cheques';
+
+EXEC spAgregarProveedor 
+    @proveedor = 'Distribuidora Agroverde',
+    @tipoProveedor = 'Proveedor de Agroquímicos',
+    @contacto = 'Lucía Gómez',
+    @direccion = 'Col. San Ignacio, Tegucigalpa',
+    @telefono = '93456789',
+    @correo = 'agroverde@distribuciones.hn',
+    @rtn = '08011996445566',
+    @condCredito = 'Crédito a 45 días con garantía',
+    @nombreBanco = 'Banco Atlántida',
+    @numCuenta = '778899001122',
+    @tipoCuenta = 'ahorro';
+
+EXEC spAgregarProveedor 
+    @proveedor = 'TecnoHerramientas HN',
+    @tipoProveedor = 'Proveedor de Herramientas',
+    @contacto = 'Mario López',
+    @direccion = 'Bo. El Carmen, La Ceiba',
+    @telefono = '94567890',
+    @correo = 'soporte@tecnoherramientas.hn',
+    @rtn = '08011995556677',
+    @condCredito = 'Pago anticipado con bonificación del 3%',
+    @nombreBanco = 'Banpaís',
+    @numCuenta = '889900112233',
+    @tipoCuenta = 'cheques';
+
+SELECT * FROM ProveedorInsumos
+SELECT * FROM Agricultor
+
 -- Registrar cosecha
--- Nota: Precio en lempiras, Cantidad en quintales
-DECLARE @detalle DetalleCosecha;
+DECLARE @detalle1 DetalleCosecha;
 
-INSERT INTO @detalle (Codigo, Producto, Cantidad, Unidad, Precio)
-VALUES
-  ('AGR-001', 'Maiz', 5000.00, 'Quintales', 550.00)
-  --('AGR-004', 'Algodon', 2000.00, 'quintales', 2500.00);
+INSERT INTO @detalle1 (Codigo, Producto, Cantidad, Unidad, Precio)
+VALUES 
+('AGR-001', 'Maíz', 850.0, 'Quintales', 250.00),
+('AGR-002', 'Algodón', 600.0, 'Quintales', 270.00),
+('AGR-003', 'Alfalfa', 500.0, 'Quintales', 180.00);
 
-EXEC spRegistrarCosecha
-  @agricultorID = 2,
-  @finca = 1,
-  @bodega       = 'Bodega 1',
-  @fecha        = '2025-07-30',
-  @tdetalle     = @detalle;
-  
-SELECT * FROM ProductosAgricolas 
+EXEC spRegistrarCosecha 
+    @agricultorID = 2, 
+    @finca = 'Finca Bellavista', 
+    @bodega = 'Bodega 1', 
+    @fecha = '2025-08-04', 
+    @tdetalle = @detalle1;
+
+DECLARE @detalle2 DetalleCosecha;
+
+INSERT INTO @detalle2 (Codigo, Producto, Cantidad, Unidad, Precio)
+VALUES 
+('AGR-003', 'Alfalfa', 1200.0, 'Quintales', 180.00),
+('AGR-001', 'Maíz', 400.0, 'Quintales', 250.00);
+
+EXEC spRegistrarCosecha 
+    @agricultorID = 2, 
+    @finca = 'Finca Monteverde', 
+    @bodega = 'Bodega INFOP', 
+    @fecha = '2025-08-04', 
+    @tdetalle = @detalle2;
+
+DECLARE @detalle3 DetalleCosecha;
+
+INSERT INTO @detalle3 (Codigo, Producto, Cantidad, Unidad, Precio)
+VALUES 
+('AGR-004', 'Rosas', 700.0, 'Quintales', 520.00),
+('AGR-001', 'Maíz', 300.0, 'Quintales', 250.00),
+('AGR-008', 'Café', 500.0, 'Quintales', 400.00);
+
+EXEC spRegistrarCosecha 
+    @agricultorID = 1, 
+    @finca = 'Finca El Paraíso', 
+    @bodega = 'Bodega INFOP', 
+    @fecha = '2025-08-04', 
+    @tdetalle = @detalle3;
+
+DECLARE @detalle4 DetalleCosecha;
+
+INSERT INTO @detalle4 (Codigo, Producto, Cantidad, Unidad, Precio)
+VALUES 
+('AGR-017', 'Piña', 900.0, 'Quintales', 180.00),
+('AGR-004', 'Rosas', 650.0, 'Quintales', 520.00),
+('AGR-039', 'Fresa', 800.0, 'Quintales', 300.00);
+
+EXEC spRegistrarCosecha 
+    @agricultorID = 2, 
+    @finca = 'Finca Miravalles', 
+    @bodega = 'Bodega 1', 
+    @fecha = '2025-08-04', 
+    @tdetalle = @detalle4;
+
+DECLARE @detalle5 DetalleCosecha;
+
+INSERT INTO @detalle5 (Codigo, Producto, Cantidad, Unidad, Precio)
+VALUES 
+('AGR-045', 'Pasto Estrella', 1500.0, 'Quintales', 90.00);
+
+EXEC spRegistrarCosecha 
+    @agricultorID = 3, 
+    @finca = 'Finca La Esperanza', 
+    @bodega = 'Bodega INFOP', 
+    @fecha = '2025-08-04', 
+    @tdetalle = @detalle5;
+
+SELECT DISTINCT PA.Codigo FROM ProductosAgricolas PA INNER JOIN Lotes L ON PA.ProductoID = L.ProductoID 
+INNER JOIN Fincas F ON L.FincaID = F.FincaID WHERE F.AgricultorID = 2;
+
+SELECT * FROM ProductosAgricolas
+
 SELECT * FROM CosechaAgricultor
 SELECT * FROM CosechaDetalleAgricultor 
 

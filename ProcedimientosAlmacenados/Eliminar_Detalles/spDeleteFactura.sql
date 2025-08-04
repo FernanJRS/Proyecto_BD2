@@ -1,0 +1,17 @@
+USE GrupoNo4
+GO
+
+CREATE OR ALTER PROCEDURE spDeleteFactura
+@facturaID INT
+AS
+	BEGIN TRANSACTION
+		
+		DELETE FROM FacturaDetalle WHERE FacturaID = @facturaID;
+
+		DELETE FROM Factura WHERE FacturaID = @facturaID;
+		
+	IF @@ERROR = 0
+		COMMIT TRANSACTION;
+	ELSE
+		ROLLBACK TRANSACTION;
+GO

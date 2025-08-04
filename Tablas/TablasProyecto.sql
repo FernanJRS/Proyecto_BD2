@@ -7,7 +7,7 @@ CREATE TABLE dbo.TipoRiego (
     Nombre		VARCHAR(100) NOT NULL,
 	CONSTRAINT pkTipoRiegoID PRIMARY KEY (TipoID)
 )
-
+ALTER TABLE dbo.TipoRiego ADD CONSTRAINT ukTipoRiego UNIQUE (Nombre);
 INSERT INTO dbo.TipoRiego VALUES (1, 'Riego por Gravedad'), (2, 'Riego por Aspersión'),
 (3, 'Riego por Goteo'), (4, 'Riego por Nebulización'), (5, 'Riego por Microaspersión'),
 (6, 'Riego por Inundación'), (7, 'Riego Subsuperficial'), (8, 'Riego por Exudación'),
@@ -20,7 +20,7 @@ CREATE TABLE dbo.TipoSuelo (
     Nombre		VARCHAR(100) NOT NULL,
 	CONSTRAINT pkTipoSueloID PRIMARY KEY (TipoID)
 )
-
+ALTER TABLE dbo.TipoSuelo ADD CONSTRAINT ukTipoSuelo UNIQUE (Nombre)
 INSERT INTO dbo.TipoSuelo VALUES (1, 'Suelo Franco'), (2, 'Suelo Arenoso'),
 (3, 'Suelo Limoso'), (4, 'Suelo Calizo'), (5, 'Suelo Arcilloso'),
 (6, 'Suelo Humífero'), (7, 'Suelo Andisol'), (8, 'Suelo Hidromorfo'),
@@ -70,6 +70,7 @@ CREATE TABLE dbo.TipoProducto
 	Nombre		VARCHAR(120) NOT NULL,
 	CONSTRAINT pkTipoProductoAgricolas PRIMARY KEY (TipoID)
 )
+ALTER TABLE dbo.TipoProducto ADD CONSTRAINT ukTipoProducto UNIQUE (Nombre);
 INSERT INTO dbo.TipoProducto VALUES (1, 'Cultivo Alimenticio'), (2, 'Cultivo Industrial'),
 (3, 'Cultivo Forrajero'), (4, 'Plantas Ornamentales'), (5, 'Plantas Medicinales')
 GO
@@ -116,6 +117,7 @@ CREATE TABLE dbo.TipoProveedor
 	Nombre		VARCHAR(100) NOT NULL,
 	CONSTRAINT pkTipoProveedorID PRIMARY KEY (TipoID)
 )
+ALTER TABLE dbo.TipoProveedor ADD CONSTRAINT ukTipoProveedor UNIQUE (Nombre);
 INSERT INTO dbo.TipoProveedor VALUES (1, 'Proveedor de Agroquímicos'),
 (2, 'Proveedor de Herramientas'), (3, 'Proveedor de Materiales Complementarios'),
 (4, 'Proveedor de Maquinaria'), (5, 'Proveedor de Insumos Biológicos')
@@ -128,6 +130,7 @@ CREATE TABLE dbo.Banco
 	Nombre		VARCHAR(100) NOT NULL,
 	CONSTRAINT pkBancoID PRIMARY KEY (BancoID)
 )
+ALTER TABLE dbo.Banco ADD CONSTRAINT ukBanco UNIQUE (Nombre);
 INSERT INTO dbo.Banco VALUES (1, 'Banco Ficohsa'), (2, 'Banco Atlantida'),
 (3, 'BAC Honduras'), (4, 'Banco de Occidente'), (5, 'Banpaís'),
 (6, 'Banco Azteca'), (7, 'Banco Cuscatlan')
@@ -201,6 +204,7 @@ CREATE TABLE dbo.TipoInsumo
 	Nombre		VARCHAR(100) NOT NULL,
 	CONSTRAINT pkTipoInsumoID PRIMARY KEY (TipoID)
 )
+ALTER TABLE dbo.TipoInsumo ADD CONSTRAINT ukTipoInsumo UNIQUE (Nombre);
 INSERT INTO dbo.TipoInsumo VALUES (1, 'Insumos Químicos'), (2, 'Insumos Biológicos'),
 (3, 'Herramientas Manuales'), (4, 'Tecnología Agrícola'), (5, 'Maquinaria Agrícola')
 GO
@@ -416,6 +420,7 @@ CREATE SCHEMA config
 CREATE TABLE config.Usuarios (
 	UsuarioID		int not null,
 	Nombre			varchar(100),
+	Usuario			varchar(100),
 	Contrasena		BINARY(16), -- La contraseña se guardará en BINARY y después sera convertida a un VARCHAR
 	Area			varchar(150),
 	Estado			varchar(50),
