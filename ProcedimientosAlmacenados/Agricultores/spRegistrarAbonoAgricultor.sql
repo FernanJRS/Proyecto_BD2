@@ -20,7 +20,7 @@ AS
 		
 		DECLARE @saldo FLOAT = (SELECT dbo.fSaldoPendienteAgricultorPorCosecha(@cosechaID, @agricultorID));
 
-		DECLARE @montoMasAbono FLOAT = (SELECT SUM(Monto) FROM PagoAgricultores WHERE AgricultorID = @agricultorID AND CosechaID = @cosechaID AND Tipo = 'A') + @monto;
+		DECLARE @montoMasAbono FLOAT = ISNULL((SELECT SUM(Monto) FROM PagoAgricultores WHERE AgricultorID = @agricultorID AND CosechaID = @cosechaID AND Tipo = 'A'), 0) + @monto;
 
 		IF (@montoMasAbono / @saldo) > 0.60 SELECT @err = 1
 
