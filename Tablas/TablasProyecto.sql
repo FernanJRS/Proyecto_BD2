@@ -375,7 +375,6 @@ CREATE TABLE dbo.AgricultorInsumosDetalle (
 )
 EXEC sp_bindrule 'rCantidadMayor0', 'dbo.AgricultorInsumosDetalle.Cantidad'
 EXEC sp_bindrule 'rCantidadMayor0', 'dbo.AgricultorInsumosDetalle.Precio'
-
 GO
 
 -----------------------------------------------------------------------------------------------------------------------------------------------

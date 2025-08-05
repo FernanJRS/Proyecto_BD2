@@ -1,8 +1,8 @@
 USE GrupoNo4
 GO
 
-CREATE OR ALTER FUNCTION dbo.ftAgricultorFincasLotes(@agricultor VARCHAR(100) = NULL, @finca VARCHAR(100) = NULL) RETURNS
-@tAgricultores TABLE (Nombre VARCHAR(100), Finca VARCHAR(100), ExtensionFinca VARCHAR(100), Lote VARCHAR(100), ProductoEnLote VARCHAR(100), 
+CREATE OR ALTER FUNCTION dbo.ftAgricultorLotes(@agricultor VARCHAR(100) = NULL, @finca VARCHAR(100) = NULL) RETURNS
+@tAgricultores TABLE (Lote VARCHAR(100), ProductoEnLote VARCHAR(100), 
 ExtensionLote VARCHAR(100), TipoSuelo VARCHAR(100), TipoRiego VARCHAR(100), CantidadCosechas VARCHAR(100))
 AS
 	BEGIN
@@ -25,8 +25,7 @@ AS
 		WHERE FincaID = @fincaID OR @fincaID IS NULL
 
 		INSERT INTO @tAgricultores
-		SELECT A.Nombre, F.NombreFinca AS NombreFinca, F.Extension AS ExtensionFinca, 
-		L.Nombre AS NombreLote, PA.Nombre AS Producto, L.Extension AS ExtensionLote, TS.Nombre AS TipoSuelo, TR.Nombre AS TipoRiego, L.CantidadCosechas
+		SELECT L.Nombre AS NombreLote, PA.Nombre AS Producto, L.Extension AS ExtensionLote, TS.Nombre AS TipoSuelo, TR.Nombre AS TipoRiego, L.CantidadCosechas
 		FROM @tAgricultorElegido A INNER JOIN @tFincasAgricultor F ON A.AgricultorID = F.AgricultorID
 		INNER JOIN Lotes L ON F.FincaID = L.FincaID
 		INNER JOIN ProductosAgricolas PA ON L.ProductoID = PA.ProductoID
