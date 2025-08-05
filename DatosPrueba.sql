@@ -505,16 +505,17 @@ EXEC spRegistrarInsumosAgricultor
 --SELECT * FROM CompraDetalleInsumos
 
 EXEC spRegistrarPagoProveedor 
-    @proveedorID = 2,
-    @compraInsumoID = 1,
+    @proveedorID = 4,
+    @compraInsumoID = 3,
     @fecha = '2025-08-04',
     @metodoPago = 'Deposito',
-    @monto = 2909.86;
+    @monto = 7000.00;
 
-	
+	SELECT * FROM CompraInsumos
+
 --SELECT * FROM PagoProveedores
 DECLARE @agricultorID INT = 2;
-DECLARE @cosechaID INT = 1;
+DECLARE @cosechaID INT = 2;
 DECLARE @fecha DATETIME = GETDATE();
 DECLARE @metodoPago VARCHAR(20) = 'Deposito';
 
@@ -522,7 +523,7 @@ DECLARE @metodoPago VARCHAR(20) = 'Deposito';
 DECLARE @saldoTotal FLOAT = dbo.fLiquidacionPendienteAgricultorPorCosecha(@cosechaID, @agricultorID);
 DECLARE @tInsumos InsumosDeducidos;
 
-SELECT @saldoTotal
+--SELECT @saldoTotal
 
 INSERT INTO @tInsumos (AgricultorInsumoID)
 SELECT AgricultorInsumoID FROM dbo.ftInsumosPendientesAgricultor(@agricultorID, @saldoTotal);
@@ -532,19 +533,20 @@ DECLARE @deduccionInsumos FLOAT = dbo.fDeduccionInsumosAgricultor(@tInsumos);
 --DECLARE @saldoSinInsumos FLOAT = @saldoTotal + @deduccionInsumos;
 
 -- Calcular abono del 50%
-DECLARE @montoAbono FLOAT = ROUND(@saldoTotal * 0.50, 2);
+DECLARE @montoAbono FLOAT = ROUND(@saldoTotal * 0.70, 2);
 
 --SELECT @saldoTotal
+
 --SELECT @montoAbono
 
 ---- Ejecutar abono
-EXEC spRegistrarAbonoAgricultor
-     @agricultorID = @agricultorID,
-     @cosechaID = @cosechaID,
-     @fecha = @fecha,
-     @metodoPago = @metodoPago,
-     @monto = @montoAbono;
-
+--EXEC spRegistrarAbonoAgricultor
+--     @agricultorID = @agricultorID,
+--     @cosechaID = @cosechaID,
+--     @fecha = @fecha,
+--     @metodoPago = @metodoPago,
+--     @monto = @montoAbono;
+	
 --SELECT * FROM CosechaAgricultor WHERE CosechaID = 1
 --SELECT * FROM PagoAgricultores
 
@@ -553,8 +555,10 @@ SELECT @saldoTotal = dbo.fLiquidacionPendienteAgricultorPorCosecha(@cosechaID, @
 SELECT @deduccionInsumos = dbo.fDeduccionInsumosAgricultor(@tInsumos);
 
 -- Monto final para liquidar
-DECLARE @montoLiquidacion FLOAT = ROUND(@saldoTotal - @deduccionInsumos, 2);
+DECLARE @montoLiquidacion FLOAT = ROUND(@saldoTotal - ISNULL(@deduccionInsumos, 0), 2);
 
+--SELECT @saldoTotal
+--SELECT @montoLiquidacion
 -- Ejecutar procedimiento
 EXEC spRegistrarLiquidacionAgricultor
      @agricultorID = @agricultorID,
@@ -562,8 +566,6 @@ EXEC spRegistrarLiquidacionAgricultor
      @fecha = @fecha,
      @metodoPago = @metodoPago,
      @monto = @montoLiquidacion;
-
-SELECT * FROM AgricultorInsumos
 
 --------------------------------------------------------------------------------------------------------------------------------------------------
 

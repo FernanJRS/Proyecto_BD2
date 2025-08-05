@@ -40,9 +40,9 @@ AS
 
 				DECLARE @montoPendiente FLOAT;
 
-				SELECT @montoPendiente = @saldo - @deduccionInsumos;
+				SELECT @montoPendiente = @saldo - ISNULL(@deduccionInsumos, 0);
 
-				IF @montoPendiente <> @monto SELECT @err = 1;
+				IF @montoPendiente != @monto SELECT @err = 1;
 
 				INSERT INTO PagoAgricultores (PagoID, AgricultorID, CosechaID, Fecha, Tipo, MetodoPago, Monto)
 				VALUES (@pagoID, @agricultorID, @cosechaID, @fecha, 'L', @metodo, @monto);
@@ -61,11 +61,19 @@ AS
 				
 						IF @@ERROR <> 0 AND @err = 0 SELECT @err = 1;
 					END
+				DECLARE @mensajeError VARCHAR(MAX);
+
+				SELECT @mensajeError = CONCAT('Verificar que se liquide el saldo total pendiente del agricultor.', CHAR(10), 'Saldo Pendiente: ',@montoPendiente, CHAR(10), 'Insumos Pendientes: ', ISNULL(@deduccionInsumos, 0));
 			END
 		ELSE SELECT @err = 1;
+
+		IF @mensajeError IS NULL SELECT @mensajeError = 'Error durante la transacción';
 
 	IF @err = 0
 		COMMIT TRANSACTION;
 	ELSE
-		ROLLBACK TRANSACTION;
+		BEGIN
+			ROLLBACK TRANSACTION;
+			THROW 50000, @mensajeError, 1
+		END
 GO

@@ -357,6 +357,7 @@ CREATE TABLE dbo.AgricultorInsumos
 	CONSTRAINT fkAgricultorInsumoAgricultor FOREIGN KEY (AgricultorID) REFERENCES Agricultor,
 )
 GO 
+SELECT * FROM AgricultorInsumosDetalle
 EXEC sp_bindefault 'dftEstado', 'dbo.AgricultorInsumos.Estado' 
 ALTER TABLE dbo.AgricultorInsumos ADD CONSTRAINT ckEstadoAgricultorInsumos CHECK (Estado IN ('P','C'));
 GO

@@ -33,8 +33,15 @@ AS
 
 		IF @@ERROR <> 0 AND @err = 0 SELECT @err = 1;
 
+		DECLARE @mensajeError VARCHAR(MAX);
+
+		SELECT @mensajeError = CONCAT('Revisar que se pague la deuda completa al proveedor.', CHAR(10), 'Total Pendiente: ', @saldo)
+
 		IF @err = 0 
 			COMMIT TRANSACTION;
 		ELSE
-			ROLLBACK TRANSACTION;							
+			BEGIN
+				ROLLBACK TRANSACTION;
+				THROW 50000, @mensajeError, 2;
+			END
 GO
