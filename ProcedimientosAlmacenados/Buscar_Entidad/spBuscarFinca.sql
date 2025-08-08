@@ -1,0 +1,8 @@
+USE GrupoNo4
+
+CREATE OR ALTER PROCEDURE spBuscarFinca
+	@Codigo VARCHAR(50)
+AS
+BEGIN
+	SELECT Nombre FROM Fincas WHERE FincaID = @Codigo
+END

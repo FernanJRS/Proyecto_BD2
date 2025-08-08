@@ -17,11 +17,13 @@ Salidas AS (
     FROM   FacturaDetalle fd
     GROUP  BY fd.ProductoID
 ) 
-SELECT p.ProductoID,
-       p.Nombre,
+SELECT p.Codigo,
+       p.Nombre AS Producto,
        ISNULL(e.CantEntradas,0) AS Entradas,
-	   ISNULL(s.CantSalidas, 0) AS Salida
+	   ISNULL(s.CantSalidas, 0) AS Salida,
+	   SUM(ISNULL(e.CantEntradas ,0) - ISNULL(s.CantSalidas, 0)) AS Existencias
 FROM   ProductosAgricolas p
 LEFT  JOIN Entradas e ON e.ProductoID = p.ProductoID
-LEFT  JOIN Salidas s ON s.ProductoID = p.ProductoID;
+LEFT  JOIN Salidas s ON s.ProductoID = p.ProductoID
+GROUP BY p.Codigo, p.Nombre, e.CantEntradas, s.CantSalidas;
 GO

@@ -174,8 +174,6 @@ ALTER TABLE dbo.ProveedorInsumos ADD CONSTRAINT ckRTNProveedor CHECK (LEN(RTN) =
 ALTER TABLE dbo.ProveedorInsumos ADD CONSTRAINT ckTelefonoProveedor CHECK ((LEN(REPLACE(Telefono, '-', '')) = 8) AND (CAST(LEFT(Telefono, 1) AS INT) IN (3, 8, 9)))
 GO
 
-GO
-
 --DROP TABLE dbo.CompraInsumos
 CREATE TABLE dbo.CompraInsumos (
     CompraInsumosID		INT NOT NULL,
@@ -242,7 +240,7 @@ CREATE TABLE dbo.CompraDetalleInsumos
 ALTER TABLE dbo.CompraDetalleInsumos ADD CONSTRAINT ckDecuentoInsumos CHECK (Descuento BETWEEN 0 AND 1)
 EXEC sp_bindrule 'rCantidadMayor0', 'dbo.CompraDetalleInsumos.Precio'
 GO
-sp_help 'CompraDetalleInsumos'
+
 --DROP TABLE dbo.Agricultor
 CREATE TABLE dbo.Agricultor (
     AgricultorID	INT NOT NULL,
